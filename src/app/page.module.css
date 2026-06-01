@@ -9,3 +9,14 @@
 .main {
   flex: 1;
 }
+
+.hero {
+  --hero-padding-left: 64px;
+  padding-top: 96px;
+  overflow-x: hidden;
+}
+
+.heroTitle {
+  margin-top: 200px;
+  padding-left: var(--hero-padding-left);
+}
