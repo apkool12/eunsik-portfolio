@@ -94,7 +94,7 @@ const Title = styled.h1`
 
   @media (max-width: 640px) {
     margin-top: 14px;
-    font-size: clamp(32px, 10vw, 42px);
+    font-size: clamp(30px, 9.4vw, 38px);
     line-height: 1.12;
   }
 `;
@@ -111,8 +111,8 @@ const Lead = styled.p`
 
   @media (max-width: 640px) {
     margin-top: 18px;
-    font-size: 17px;
-    line-height: 1.62;
+    font-size: 16px;
+    line-height: 1.58;
     overflow-wrap: anywhere;
   }
 `;
@@ -207,8 +207,10 @@ const ArticleGrid = styled.div`
   margin-top: clamp(70px, 10vh, 112px);
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
+    width: 100%;
+    max-width: 100%;
     margin-top: 54px;
   }
 `;
@@ -224,6 +226,9 @@ const IndexRail = styled.aside`
     position: static;
     top: auto;
     z-index: auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     padding-bottom: 0;
   }
 `;
@@ -236,6 +241,8 @@ const IndexRailInner = styled.div`
   @media (max-width: 900px) {
     margin: 0;
     padding: 18px 0 4px;
+    min-width: 0;
+    max-width: 100%;
     border-top: 2px solid #000;
     border-bottom: 1px solid #dedede;
     box-shadow: none;
@@ -267,6 +274,8 @@ const RailList = styled.ol`
     flex-direction: row;
     gap: 8px;
     margin-top: 12px;
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
@@ -278,6 +287,11 @@ const RailList = styled.ol`
 `;
 
 const RailItem = styled.li`
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    flex: 0 0 auto;
+  }
 `;
 
 const RailLink = styled.a`
@@ -297,7 +311,8 @@ const RailLink = styled.a`
 
   @media (max-width: 900px) {
     grid-template-columns: 26px minmax(86px, 1fr);
-    min-width: min(58vw, 184px);
+    width: min(58vw, 184px);
+    min-width: 0;
     padding: 10px 12px;
     border: 1px solid #dedede;
     border-radius: 999px;
@@ -307,7 +322,7 @@ const RailLink = styled.a`
   }
 
   @media (max-width: 480px) {
-    min-width: min(68vw, 174px);
+    width: min(68vw, 174px);
     font-size: 12px;
   }
 
@@ -344,7 +359,10 @@ const RailLink = styled.a`
 `;
 
 const Article = styled.article`
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  overflow: hidden;
 `;
 
 const Section = styled.section`
@@ -358,7 +376,10 @@ const Section = styled.section`
 
   @media (max-width: 640px) {
     scroll-margin-top: calc(var(--header-height, 72px) + 28px);
+    width: 100%;
+    max-width: 100%;
     padding-top: 32px;
+    overflow: hidden;
 
     & + & {
       margin-top: 42px;
@@ -376,7 +397,7 @@ const SectionHeading = styled.h2`
   word-break: keep-all;
 
   @media (max-width: 640px) {
-    font-size: clamp(24px, 7.2vw, 32px);
+    font-size: clamp(22px, 6.5vw, 28px);
     line-height: 1.25;
     overflow-wrap: anywhere;
   }
@@ -393,8 +414,10 @@ const Paragraph = styled.p`
 
   @media (max-width: 640px) {
     margin-top: 18px;
-    font-size: 16px;
-    line-height: 1.72;
+    width: 100%;
+    max-width: 100%;
+    font-size: 15px;
+    line-height: 1.68;
     word-break: normal;
     overflow-wrap: anywhere;
   }

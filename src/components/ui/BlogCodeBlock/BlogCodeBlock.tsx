@@ -10,6 +10,7 @@ type BlogCodeBlockProps = {
 
 const Figure = styled.figure`
   margin: 28px 0 0;
+  width: 100%;
   max-width: 100%;
   min-width: 0;
 `;
@@ -59,6 +60,8 @@ const Caption = styled.span`
 
 const Pre = styled.pre`
   margin: 0;
+  width: 100%;
+  min-width: 0;
   padding: 20px 18px;
   overflow-x: auto;
   max-width: 100%;
@@ -84,6 +87,7 @@ const Pre = styled.pre`
 
 const Code = styled.code`
   display: block;
+  width: 100%;
   min-width: 0;
   color: #111;
   font-family: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
