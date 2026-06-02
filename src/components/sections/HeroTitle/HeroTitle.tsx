@@ -19,7 +19,7 @@ const Title = styled.h1`
   letter-spacing: 0;
 
   @media (max-width: 480px) {
-    font-size: clamp(52px, 18vw, 72px);
+    font-size: clamp(42px, 15vw, 58px);
     line-height: 1.05;
   }
 `;
@@ -31,6 +31,9 @@ const Line = styled.span`
 const Line2 = styled.span`
   position: relative;
   display: block;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
 `;
 
 /** overflow를 잘라 타이핑처럼 글자가 좌→우로 드러나게 하는 래퍼 */
@@ -71,6 +74,10 @@ const MChar = styled.span`
 const Line2Type = styled(TypeWrap)`
   position: relative;
   z-index: 1;
+
+  @media (max-width: 480px) {
+    max-width: calc(100vw - (var(--page-gutter) * 2) - 1.2em);
+  }
 `;
 
 export function HeroTitle() {

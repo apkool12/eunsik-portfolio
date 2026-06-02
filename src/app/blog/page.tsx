@@ -16,8 +16,10 @@ const BLOG_FILTERS: { id: BlogFilter; label: string }[] = [
 ];
 
 const Page = styled.main`
+  --blog-gutter: var(--page-gutter);
+
   min-height: calc(100dvh - var(--header-height, 88px));
-  padding: clamp(112px, 15vh, 168px) var(--page-gutter) 72px;
+  padding: clamp(112px, 15vh, 168px) var(--blog-gutter) 72px;
   background: #fff;
   overflow-x: hidden;
 
@@ -26,6 +28,9 @@ const Page = styled.main`
   }
 
   @media (max-width: 480px) {
+    --blog-gutter: clamp(28px, 7vw, 34px);
+
+    padding-top: 84px;
     padding-bottom: 56px;
   }
 `;
@@ -50,6 +55,10 @@ const Title = styled.h1`
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0;
+
+  @media (max-width: 480px) {
+    font-size: clamp(58px, 18vw, 78px);
+  }
 `;
 
 const Intro = styled.div`
@@ -73,6 +82,12 @@ const IntroText = styled.p`
   font-weight: 300;
   line-height: 1.38;
   word-break: keep-all;
+
+  @media (max-width: 640px) {
+    font-size: 18px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
 `;
 
 const Content = styled.section`
@@ -157,6 +172,10 @@ const Feed = styled.div`
   display: flex;
   flex-direction: column;
   gap: clamp(34px, 5vh, 54px);
+
+  @media (max-width: 480px) {
+    gap: 32px;
+  }
 `;
 
 const FilterTabs = styled.div`
@@ -240,8 +259,8 @@ const PostLink = styled(Link)`
   }
 
   @media (max-width: 480px) {
-    grid-template-columns: 68px minmax(0, 1fr);
-    gap: 14px;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 16px;
     min-height: 0;
 
     &:hover,
@@ -327,6 +346,12 @@ const PostTitle = styled.h2`
   line-height: 1.18;
   letter-spacing: 0;
   word-break: keep-all;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 480px) {
+    font-size: clamp(21px, 6.4vw, 27px);
+    line-height: 1.26;
+  }
 `;
 
 const PostExcerpt = styled.p`
@@ -338,6 +363,13 @@ const PostExcerpt = styled.p`
   font-weight: 600;
   line-height: 1.35;
   word-break: keep-all;
+
+  @media (max-width: 480px) {
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
 `;
 
 const TagRow = styled.div`

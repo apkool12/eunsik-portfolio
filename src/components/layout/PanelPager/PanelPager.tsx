@@ -122,7 +122,7 @@ const Viewport = styled.div<{ $paged: boolean }>`
   `
       : ""}
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     position: static;
     overflow: visible;
   }
@@ -138,7 +138,7 @@ const Stack = styled.div<{ $paged: boolean }>`
   `
       : ""}
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     width: 100%;
     height: auto;
   }
@@ -166,15 +166,19 @@ const Panel = styled.div<{ $paged: boolean; $initial: boolean }>`
     min-height: calc(100dvh - var(--header-height, 88px));
   `}
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     position: relative;
     inset: auto;
     min-height: auto;
-    padding: clamp(56px, 10vh, 88px) 0;
+    padding: clamp(40px, 8vh, 64px) 0;
     overflow: visible;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+  }
+
+  @media (max-width: 640px) {
+    padding: 34px 0;
   }
 
   &::-webkit-scrollbar {
@@ -186,16 +190,16 @@ export function PanelPager({ children, showDots = false }: PanelPagerProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
   const goToRef = useRef<(index: number) => void>(() => {});
-  const [paged, setPaged] = useState(true);
+  const [paged, setPaged] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isCompact, setIsCompact] = useState(true);
 
   const panels = Children.toArray(children);
   const total = panels.length;
 
   useEffect(() => {
-    const query = window.matchMedia("(max-width: 900px)");
-    const update = () => setIsMobile(query.matches);
+    const query = window.matchMedia("(max-width: 1100px)");
+    const update = () => setIsCompact(query.matches);
 
     update();
     query.addEventListener("change", update);
@@ -215,7 +219,7 @@ export function PanelPager({ children, showDots = false }: PanelPagerProps) {
         "(prefers-reduced-motion: reduce)"
       ).matches;
 
-      if (reduceMotion || isMobile || total <= 1) {
+      if (reduceMotion || isCompact || total <= 1) {
         setPaged(false);
         gsap.set(panelEls, { clearProps: "all" });
         return;
@@ -320,7 +324,7 @@ export function PanelPager({ children, showDots = false }: PanelPagerProps) {
         window.removeEventListener("keydown", onKey);
       };
     },
-    { scope: viewportRef, dependencies: [total, isMobile] }
+    { scope: viewportRef, dependencies: [total, isCompact] }
   );
 
   return (

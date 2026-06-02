@@ -29,8 +29,8 @@ const Section = styled.section`
   @media (max-width: 900px) {
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    gap: 36px;
+    justify-content: flex-start;
+    gap: 28px;
   }
 `;
 
@@ -53,9 +53,14 @@ const PhotoRing = styled.div`
 
   @media (max-width: 900px) {
     order: -1;
-    width: min(72vw, 340px);
+    width: min(58vw, 280px);
     margin-right: 0;
     padding: 12px;
+  }
+
+  @media (max-width: 480px) {
+    width: min(54vw, 220px);
+    padding: 9px;
   }
 `;
 
@@ -77,7 +82,7 @@ const Title = styled.h1`
   line-height: 123.871%;
 
   @media (max-width: 480px) {
-    font-size: clamp(58px, 19vw, 82px);
+    font-size: clamp(50px, 17vw, 72px);
   }
 `;
 
@@ -118,6 +123,7 @@ const Ghost = styled.p`
 
   @media (max-width: 640px) {
     left: 18px;
+    font-size: clamp(30px, 9vw, 42px);
     filter: blur(3px);
   }
 `;
@@ -144,7 +150,7 @@ const Line = styled.span`
   will-change: transform;
 
   @media (max-width: 480px) {
-    font-size: clamp(30px, 9vw, 40px);
+    font-size: clamp(27px, 8.2vw, 36px);
   }
 `;
 
@@ -164,8 +170,8 @@ const InfoCard = styled.div`
 
   @media (max-width: 640px) {
     min-height: 116px;
-    margin-top: 34px;
-    padding: 24px;
+    margin-top: 28px;
+    padding: 22px;
   }
 `;
 

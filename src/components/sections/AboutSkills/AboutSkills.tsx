@@ -44,10 +44,49 @@ const Section = styled.section`
   padding: 0 64px;
 
   @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 0 24px;
+    display: flex;
+    gap: 16px;
+    padding: 0 var(--page-gutter) 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-left: var(--page-gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
+`;
+
+const MobileHeader = styled.div`
+  display: none;
+
+  @media (max-width: 900px) {
+    flex: 0 0 100%;
+    display: block;
+    padding: 0 0 2px;
+    scroll-snap-align: start;
+  }
+`;
+
+const MobileEyebrow = styled.p`
+  margin: 0;
+  color: #97c42f;
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+`;
+
+const MobileTitle = styled.h2`
+  margin: 8px 0 0;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(40px, 13vw, 58px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
 `;
 
 const Card = styled.div<{ $active: boolean }>`
@@ -76,9 +115,11 @@ const Card = styled.div<{ $active: boolean }>`
   }
 
   @media (max-width: 900px) {
+    flex: 0 0 min(82vw, 340px);
     aspect-ratio: auto;
-    min-height: 260px;
+    min-height: 300px;
     padding: 28px 24px;
+    scroll-snap-align: start;
   }
 `;
 
@@ -154,11 +195,19 @@ export function AboutSkills() {
 
   return (
     <Section>
+      <MobileHeader>
+        <MobileEyebrow>Swipe skill cards</MobileEyebrow>
+        <MobileTitle>Skills,</MobileTitle>
+      </MobileHeader>
       {SKILL_GROUPS.map((group, i) => (
         <Card
           key={group.title}
           $active={activeIndex === i}
           onMouseEnter={() => setActiveIndex(i)}
+          onFocus={() => setActiveIndex(i)}
+          onClick={() => setActiveIndex(i)}
+          onTouchStart={() => setActiveIndex(i)}
+          tabIndex={0}
         >
           <CardHead>
             <CardTitle>{group.title}</CardTitle>

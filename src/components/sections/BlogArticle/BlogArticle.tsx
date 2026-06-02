@@ -13,10 +13,19 @@ import {
 } from "@/constants/blog";
 
 const Page = styled.main`
+  --article-gutter: var(--page-gutter);
+
   min-height: calc(100dvh - var(--header-height, 88px));
-  padding: clamp(96px, 13vh, 148px) var(--page-gutter) 84px;
+  padding: clamp(96px, 13vh, 148px) var(--article-gutter) 84px;
   background: #fff;
   overflow-x: hidden;
+
+  @media (max-width: 640px) {
+    --article-gutter: clamp(28px, 7vw, 34px);
+
+    padding-top: 86px;
+    padding-bottom: 64px;
+  }
 `;
 
 const BackLink = styled(Link)`
@@ -81,6 +90,13 @@ const Title = styled.h1`
   line-height: 1.05;
   letter-spacing: 0;
   word-break: keep-all;
+  overflow-wrap: anywhere;
+
+  @media (max-width: 640px) {
+    margin-top: 14px;
+    font-size: clamp(32px, 10vw, 42px);
+    line-height: 1.12;
+  }
 `;
 
 const Lead = styled.p`
@@ -92,6 +108,13 @@ const Lead = styled.p`
   font-weight: 300;
   line-height: 1.46;
   word-break: keep-all;
+
+  @media (max-width: 640px) {
+    margin-top: 18px;
+    font-size: 17px;
+    line-height: 1.62;
+    overflow-wrap: anywhere;
+  }
 `;
 
 const HeroThumb = styled.div`
@@ -205,7 +228,8 @@ const ArticleGrid = styled.div`
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    gap: 34px;
+    gap: 28px;
+    margin-top: 54px;
   }
 `;
 
@@ -217,7 +241,10 @@ const IndexRail = styled.aside`
   padding-bottom: 24px;
 
   @media (max-width: 900px) {
-    top: calc(var(--header-height, 72px) + 10px);
+    position: static;
+    top: auto;
+    z-index: auto;
+    padding-bottom: 0;
   }
 `;
 
@@ -227,11 +254,11 @@ const IndexRailInner = styled.div`
   background: #fff;
 
   @media (max-width: 900px) {
-    margin: 0 calc(var(--page-gutter) * -1);
-    padding: 14px var(--page-gutter) 12px;
+    margin: 0;
+    padding: 18px 0 4px;
     border-top: 2px solid #000;
     border-bottom: 1px solid #dedede;
-    box-shadow: 0 14px 28px rgba(255, 255, 255, 0.92);
+    box-shadow: none;
   }
 
   @media (max-width: 480px) {
@@ -289,15 +316,18 @@ const RailLink = styled.a`
   transition: color 0.2s ease, transform 0.2s ease;
 
   @media (max-width: 900px) {
-    grid-template-columns: auto;
-    min-width: 104px;
-    padding: 0;
+    grid-template-columns: 26px minmax(86px, 1fr);
+    min-width: min(58vw, 184px);
+    padding: 10px 12px;
+    border: 1px solid #dedede;
+    border-radius: 999px;
     font-size: 13px;
     line-height: 1.25;
+    background: #fff;
   }
 
   @media (max-width: 480px) {
-    min-width: 92px;
+    min-width: min(68vw, 174px);
     font-size: 12px;
   }
 
@@ -323,6 +353,13 @@ const RailLink = styled.a`
       border-color: #97c42f;
       color: #fff;
     }
+
+    @media (max-width: 900px) {
+      color: #000;
+      transform: none;
+      border-color: #97c42f;
+      background: #f4ffd9;
+    }
   }
 `;
 
@@ -338,6 +375,15 @@ const Section = styled.section`
   & + & {
     margin-top: 56px;
   }
+
+  @media (max-width: 640px) {
+    scroll-margin-top: calc(var(--header-height, 72px) + 28px);
+    padding-top: 32px;
+
+    & + & {
+      margin-top: 42px;
+    }
+  }
 `;
 
 const SectionHeading = styled.h2`
@@ -348,6 +394,12 @@ const SectionHeading = styled.h2`
   font-weight: 900;
   line-height: 1.2;
   word-break: keep-all;
+
+  @media (max-width: 640px) {
+    font-size: clamp(24px, 7.2vw, 32px);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
 `;
 
 const Paragraph = styled.p`
@@ -359,8 +411,12 @@ const Paragraph = styled.p`
   line-height: 1.82;
   word-break: keep-all;
 
-  @media (max-width: 480px) {
-    line-height: 1.75;
+  @media (max-width: 640px) {
+    margin-top: 18px;
+    font-size: 16px;
+    line-height: 1.72;
+    word-break: normal;
+    overflow-wrap: anywhere;
   }
 `;
 
@@ -523,20 +579,6 @@ export function BlogArticle({ post }: { post: BlogPost }) {
       window.removeEventListener("resize", updateActiveSection);
     };
   }, [post.slug]);
-
-  useEffect(() => {
-    const activeLink = railLinkRefs.current[activeSection];
-    if (!activeLink) return;
-
-    const isMobileRail = window.matchMedia("(max-width: 900px)").matches;
-    if (!isMobileRail) return;
-
-    activeLink.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }, [activeSection]);
 
   return (
     <Page ref={scopeRef}>
