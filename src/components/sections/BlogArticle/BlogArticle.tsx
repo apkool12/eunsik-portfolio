@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -318,7 +318,7 @@ const RailLink = styled.a`
     &::before {
       background: #97c42f;
       border-color: #97c42f;
-      color: #000;
+      color: #fff;
     }
   }
 `;
@@ -427,12 +427,21 @@ export function BlogArticle({ post }: { post: BlogPost }) {
     (_, index) => `${post.slug}-section-${index + 1}`
   );
 
+  useLayoutEffect(() => {
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    scrollToTop();
+    requestAnimationFrame(scrollToTop);
+  }, [post.slug]);
+
   useGSAP(
     () => {
       const scope = scopeRef.current;
       if (!scope) return;
-
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
@@ -697,11 +706,11 @@ export function BlogArticle({ post }: { post: BlogPost }) {
             </Section>
           ))}
           <FooterNav>
-            <FooterLink href={`/blog/${previousPost.slug}`}>
+            <FooterLink href={`/blog/${previousPost.slug}`} scroll={false}>
               <FooterLabel>Previous Note</FooterLabel>
               <FooterTitle>{previousPost.title}</FooterTitle>
             </FooterLink>
-            <FooterLink href={`/blog/${nextPost.slug}`}>
+            <FooterLink href={`/blog/${nextPost.slug}`} scroll={false}>
               <FooterLabel>Next Note</FooterLabel>
               <FooterTitle>{nextPost.title}</FooterTitle>
             </FooterLink>

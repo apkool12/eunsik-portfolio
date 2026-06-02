@@ -469,6 +469,10 @@ export default function BlogPage() {
               key={post.number}
               href={`/blog/${post.slug}`}
               data-blog-post
+              scroll={false}
+              onClick={() => {
+                window.scrollTo(0, 0);
+              }}
             >
               <Thumbnail data-tone={post.tone} data-blog-thumb>
                 <ThumbnailIcon data-blog-thumb-icon>
