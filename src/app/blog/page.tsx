@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { BLOG_POSTS } from "@/constants/blog";
+import { BLOG_POSTS, type BlogCategory } from "@/constants/blog";
+
+type BlogFilter = "all" | BlogCategory;
+
+const BLOG_FILTERS: { id: BlogFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "dev", label: "Dev Notes" },
+  { id: "daily", label: "Daily" },
+];
 
 const Page = styled.main`
   min-height: calc(100dvh - var(--header-height, 88px));
@@ -149,6 +157,49 @@ const Feed = styled.div`
   display: flex;
   flex-direction: column;
   gap: clamp(34px, 5vh, 54px);
+`;
+
+const FilterTabs = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 clamp(30px, 4vh, 48px);
+`;
+
+const FilterButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(15px, 1.8vw, 18px);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+
+  &[data-active="true"],
+  &:hover,
+  &:focus-visible {
+    background: #000;
+    color: #fff;
+    outline: none;
+    transform: translateY(-2px);
+  }
+
+  &[data-active="true"] {
+    box-shadow: inset 0 0 0 4px #97c42f;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 38px;
+    padding: 0 14px;
+  }
 `;
 
 const PostLink = styled(Link)`
@@ -386,6 +437,14 @@ const AuthorText = styled.p`
 
 export default function BlogPage() {
   const scopeRef = useRef<HTMLElement>(null);
+  const [activeFilter, setActiveFilter] = useState<BlogFilter>("all");
+  const visiblePosts = useMemo(
+    () =>
+      activeFilter === "all"
+        ? BLOG_POSTS
+        : BLOG_POSTS.filter((post) => post.category === activeFilter),
+    [activeFilter]
+  );
 
   useGSAP(
     () => {
@@ -402,6 +461,7 @@ export default function BlogPage() {
       const title = scope.querySelector("[data-blog-title]");
       const intro = scope.querySelector("[data-blog-intro]");
       const archive = scope.querySelector("[data-blog-archive]");
+      const filters = scope.querySelectorAll("[data-blog-filter]");
       const posts = scope.querySelectorAll("[data-blog-post]");
       const thumbs = scope.querySelectorAll("[data-blog-thumb]");
       const author = scope.querySelector("[data-blog-author]");
@@ -414,6 +474,11 @@ export default function BlogPage() {
           archive,
           { clipPath: "inset(0 100% 0 0)", autoAlpha: 0, duration: 0.58 },
           "-=0.18"
+        )
+        .from(
+          filters,
+          { y: 12, autoAlpha: 0, stagger: 0.05, duration: 0.32 },
+          "-=0.24"
         )
         .from(
           thumbs,
@@ -460,11 +525,25 @@ export default function BlogPage() {
         <ArchiveBar data-blog-archive aria-label="블로그 아카이브">
           <ArchiveLabel>Archive</ArchiveLabel>
           <ArchiveLine />
-          <ArchiveCount>{BLOG_POSTS.length} Notes</ArchiveCount>
+          <ArchiveCount>{visiblePosts.length} Notes</ArchiveCount>
         </ArchiveBar>
 
+        <FilterTabs aria-label="블로그 카테고리">
+          {BLOG_FILTERS.map((filter) => (
+            <FilterButton
+              key={filter.id}
+              type="button"
+              data-active={activeFilter === filter.id}
+              data-blog-filter
+              onClick={() => setActiveFilter(filter.id)}
+            >
+              {filter.label}
+            </FilterButton>
+          ))}
+        </FilterTabs>
+
         <Feed aria-label="블로그 글 목록">
-          {BLOG_POSTS.map((post) => (
+          {visiblePosts.map((post) => (
             <PostLink
               key={post.number}
               href={`/blog/${post.slug}`}

@@ -11,6 +11,11 @@
   --project-details-width: clamp(340px, 28vw, 440px);
   --project-content-gap: clamp(28px, 3.5vw, 48px);
   --project-dots-reserve: clamp(52px, 5vw, 80px);
+  --global-scale: clamp(
+    0.84,
+    min(calc(100vw / 1600), calc((100svh - var(--header-height)) / 812)),
+    1
+  );
 }
 
 @media (max-width: 1100px) {
@@ -26,6 +31,7 @@
     --project-details-width: minmax(0, 1fr);
     --project-content-gap: 18px;
     --project-dots-reserve: 0px;
+    --global-scale: 1;
   }
 }
 

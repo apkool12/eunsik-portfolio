@@ -5,7 +5,7 @@ import { AboutSkills } from "@/components/sections/AboutSkills";
 
 export default function AboutPage() {
   return (
-    <PanelPager>
+    <PanelPager showDots>
       <AboutIntro />
       <AboutSkills />
       <AboutAffiliation />

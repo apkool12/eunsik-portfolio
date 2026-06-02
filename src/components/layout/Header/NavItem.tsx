@@ -76,6 +76,12 @@ const NavLink = styled(Link)`
     padding: 8px clamp(8px, 2.4vw, 14px);
     font-size: clamp(14px, 3.7vw, 17px);
   }
+
+  @media (max-width: 420px) {
+    min-height: 30px;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
 `;
 
 const Label = styled.span`

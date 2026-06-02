@@ -311,7 +311,7 @@ export function PanelPager({ children, showDots = false }: PanelPagerProps) {
         </Stack>
       </Viewport>
       {showDots && paged && total > 1 && (
-        <DotsNav aria-label="프로젝트 목록">
+        <DotsNav aria-label="섹션 목록">
           {panels.map((_, i) => (
             <li key={i}>
               <DotButton

@@ -40,11 +40,11 @@ const PageTitle = styled.h1`
   align-items: flex-end;
   gap: 0;
   width: fit-content;
-  margin: 0 0 clamp(18px, 2vh, 24px);
-  padding: clamp(112px, 15vh, 168px) var(--page-gutter) 0;
+  margin: 0 0 clamp(12px, 1.8svh, 22px);
+  padding: clamp(72px, 11svh, 128px) var(--page-gutter) 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: 180px;
+  font-size: clamp(112px, 9.2vw, 168px);
   font-weight: 900;
   line-height: 1.05;
   flex-shrink: 0;
@@ -95,7 +95,7 @@ const Content = styled.div`
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: clamp(16px, 2.5vh, 24px);
+    gap: clamp(16px, 2.5svh, 24px);
     min-height: 0;
     padding: 0 var(--page-gutter);
     overflow: hidden;
@@ -123,7 +123,7 @@ const Preview = styled.div`
     order: 2;
     flex: 1;
     width: 100%;
-    min-height: min(48vh, 360px);
+    min-height: min(44svh, 340px);
     height: auto;
     aspect-ratio: 16 / 11;
     border-radius: 0 24px 0 0;
@@ -245,7 +245,7 @@ const Details = styled.div`
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  padding: 12px 0 32px;
+  padding: clamp(6px, 1.3svh, 12px) 0 clamp(18px, 3svh, 32px);
 
   @media (max-width: 1100px) {
     order: 1;
@@ -268,7 +268,7 @@ const ProjectName = styled.h2`
   margin: 8px 0 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: clamp(30px, 5vw, 56px);
+  font-size: clamp(30px, 4.4vw, 50px);
   font-weight: 800;
   line-height: 1.3;
   word-break: keep-all;
@@ -276,7 +276,7 @@ const ProjectName = styled.h2`
 `;
 
 const Description = styled.p`
-  margin: 16px 0 0;
+  margin: clamp(10px, 1.5svh, 16px) 0 0;
   color: #6b6b6b;
   font-family: "Pretendard", sans-serif;
   font-size: clamp(15px, 2vw, 18px);
@@ -289,8 +289,8 @@ const Description = styled.p`
 const MetaList = styled.dl`
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin: clamp(28px, 4vh, 48px) 0 0;
+  gap: clamp(12px, 2svh, 20px);
+  margin: clamp(20px, 3svh, 36px) 0 0;
   padding: 0;
 
   @media (max-width: 640px) {
@@ -329,7 +329,7 @@ const TechRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: clamp(28px, 4vh, 40px);
+  margin-top: clamp(18px, 3svh, 30px);
 `;
 
 const TechPill = styled.span`
@@ -357,7 +357,7 @@ const GithubLink = styled.a`
   align-items: center;
   gap: 10px;
   width: fit-content;
-  margin-top: clamp(24px, 3vh, 32px);
+  margin-top: clamp(18px, 2.8svh, 28px);
   padding: 12px 24px 12px 20px;
   border-radius: 999px;
   background: #000;

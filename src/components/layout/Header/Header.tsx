@@ -44,6 +44,10 @@ const HeaderBar = styled.header`
     padding: 18px var(--page-gutter);
     border-radius: 0 0 22px 22px;
   }
+
+  @media (max-width: 420px) {
+    padding: 16px 12px;
+  }
 `;
 
 const LogoLink = styled(Link)`
@@ -61,6 +65,10 @@ const LogoLink = styled(Link)`
   svg {
     width: clamp(42px, 12vw, 64px);
     height: auto;
+
+    @media (max-width: 420px) {
+      width: 34px;
+    }
   }
 `;
 
@@ -81,6 +89,11 @@ const Nav = styled.nav`
     max-width: none;
     padding-right: 0;
     margin-left: 18px;
+  }
+
+  @media (max-width: 420px) {
+    gap: 4px;
+    margin-left: 10px;
   }
 `;
 

@@ -210,20 +210,23 @@ const ArticleGrid = styled.div`
 `;
 
 const IndexRail = styled.aside`
+  position: sticky;
+  top: calc(var(--header-height, 88px) + 34px);
+  z-index: 5;
   align-self: start;
   padding-bottom: 24px;
+
+  @media (max-width: 900px) {
+    top: calc(var(--header-height, 72px) + 10px);
+  }
 `;
 
 const IndexRailInner = styled.div`
   position: relative;
-  z-index: 5;
   padding-top: 8px;
-  will-change: transform;
+  background: #fff;
 
   @media (max-width: 900px) {
-    position: sticky;
-    top: calc(var(--header-height, 72px) + 10px);
-    transform: none;
     margin: 0 calc(var(--page-gutter) * -1);
     padding: 14px var(--page-gutter) 12px;
     border-top: 2px solid #000;
@@ -232,7 +235,7 @@ const IndexRailInner = styled.div`
   }
 
   @media (max-width: 480px) {
-    top: calc(var(--header-height, 72px) + 6px);
+    padding-top: 12px;
   }
 `;
 
@@ -415,8 +418,6 @@ const FooterTitle = styled.span`
 
 export function BlogArticle({ post }: { post: BlogPost }) {
   const scopeRef = useRef<HTMLElement>(null);
-  const railRef = useRef<HTMLElement>(null);
-  const railInnerRef = useRef<HTMLDivElement>(null);
   const railLinkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const [activeSection, setActiveSection] = useState(0);
   const currentPostIndex = BLOG_POSTS.findIndex((item) => item.slug === post.slug);
@@ -537,74 +538,6 @@ export function BlogArticle({ post }: { post: BlogPost }) {
     });
   }, [activeSection]);
 
-  useEffect(() => {
-    const scope = scopeRef.current;
-    const rail = railRef.current;
-    const railInner = railInnerRef.current;
-    if (!scope || !rail || !railInner) return;
-
-    const article = scope.querySelector<HTMLElement>("[data-article-content]");
-    if (!article) return;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    gsap.set(railInner, { y: 0, force3D: true });
-
-    const moveRail = reduceMotion
-      ? (offset: number) => {
-          gsap.set(railInner, { y: offset });
-        }
-      : gsap.quickTo(railInner, "y", {
-          duration: 0.72,
-          ease: "power3.out",
-          overwrite: true,
-        });
-
-    const getTargetOffset = () => {
-      const isMobile = window.matchMedia("(max-width: 900px)").matches;
-      if (isMobile) return 0;
-
-      const railTopInDoc = rail.getBoundingClientRect().top + window.scrollY;
-      const articleRect = article.getBoundingClientRect();
-      const articleTopInDoc = articleRect.top + window.scrollY;
-      const articleBottomInDoc = articleTopInDoc + articleRect.height;
-      const railInnerHeight = railInner.offsetHeight;
-      const centerTopInViewport = window.innerHeight / 2 - railInnerHeight / 2;
-      const desiredTopInDoc = window.scrollY + centerTopInViewport;
-      const minTopInDoc = railTopInDoc;
-      const maxTopInDoc = articleBottomInDoc - railInnerHeight - 24;
-      const clampedTopInDoc = Math.min(
-        Math.max(desiredTopInDoc, minTopInDoc),
-        maxTopInDoc
-      );
-
-      return Math.max(0, clampedTopInDoc - railTopInDoc);
-    };
-
-    const update = () => {
-      const isMobile = window.matchMedia("(max-width: 900px)").matches;
-      if (isMobile) {
-        gsap.set(railInner, { clearProps: "transform" });
-        return;
-      }
-
-      moveRail(getTargetOffset());
-    };
-
-    update();
-
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      gsap.killTweensOf(railInner);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [post.slug]);
-
   return (
     <Page ref={scopeRef}>
       <BackLink href="/blog" data-article-back>
@@ -637,8 +570,8 @@ export function BlogArticle({ post }: { post: BlogPost }) {
       </Hero>
 
       <ArticleGrid>
-        <IndexRail ref={railRef} data-article-rail>
-          <IndexRailInner ref={railInnerRef}>
+        <IndexRail data-article-rail>
+          <IndexRailInner>
             <RailTitle>Index</RailTitle>
             <RailList>
               {post.sections.map((section, index) => (
