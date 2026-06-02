@@ -21,6 +21,16 @@ export const ProjectsPageFrame = styled.div`
   flex-direction: column;
   overflow: hidden;
   background: #fff;
+
+  @media (max-width: 1100px) {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    min-height: calc(100dvh - var(--header-height, 88px));
+    overflow: visible;
+  }
 `;
 
 /** PanelPager 세로 중앙 정렬을 무시하고 화면 전체 높이 사용 */
@@ -32,6 +42,11 @@ export const ProjectPanelShell = styled.div`
   width: 100%;
   min-height: 0;
   height: 100%;
+
+  @media (max-width: 1100px) {
+    height: auto;
+    min-height: calc(100dvh - var(--header-height, 88px));
+  }
 `;
 
 const Section = styled.section`
