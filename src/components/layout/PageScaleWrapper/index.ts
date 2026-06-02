@@ -1,0 +1,1 @@
+export { PageScaleWrapper } from "./PageScaleWrapper";

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { Header } from "@/components/layout/Header";
+import { PageScaleWrapper } from "@/components/layout/PageScaleWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export default function RootLayout({
       <body>
         <AppProviders>
           <Header />
-          <div className="pageScaleWrapper">{children}</div>
+          <PageScaleWrapper>{children}</PageScaleWrapper>
         </AppProviders>
       </body>
     </html>

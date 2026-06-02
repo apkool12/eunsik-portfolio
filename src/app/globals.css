@@ -50,18 +50,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.pageScaleWrapper {
-  zoom: var(--global-scale);
-}
-
-@supports not (zoom: 1) {
-  .pageScaleWrapper {
-    transform: scale(var(--global-scale));
-    transform-origin: top left;
-    width: calc(100% / var(--global-scale));
-  }
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
