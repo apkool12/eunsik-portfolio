@@ -55,7 +55,7 @@ const DotButton = styled.button<{ $active: boolean }>`
 
 function findPanelScrollRoot(target: EventTarget | null): HTMLElement | null {
   if (!(target instanceof Element)) return null;
-  return target.closest("[data-panel-scroll]");
+  return target.closest("[data-panel-scroll], [data-panel]");
 }
 
 function isInHorizontalCarousel(e: Event) {
@@ -90,7 +90,23 @@ function shouldIgnorePanelScroll(e: Event) {
   const scrollRoot = findPanelScrollRoot(e.target);
   if (!scrollRoot) return false;
 
-  return true;
+  const canScroll = scrollRoot.scrollHeight > scrollRoot.clientHeight + 1;
+  if (!canScroll) return false;
+
+  if (!(e instanceof WheelEvent)) {
+    return true;
+  }
+
+  const scrollingDown = e.deltaY > 0;
+  const scrollingUp = e.deltaY < 0;
+  const atTop = scrollRoot.scrollTop <= 1;
+  const atBottom =
+    scrollRoot.scrollTop + scrollRoot.clientHeight >= scrollRoot.scrollHeight - 1;
+
+  if (scrollingDown && !atBottom) return true;
+  if (scrollingUp && !atTop) return true;
+
+  return false;
 }
 
 const Viewport = styled.div<{ $paged: boolean }>`
@@ -137,11 +153,14 @@ const Panel = styled.div<{ $paged: boolean; $initial: boolean }>`
       ? `
     position: absolute;
     inset: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     opacity: ${$initial ? 1 : 0};
     visibility: ${$initial ? "visible" : "hidden"};
     pointer-events: ${$initial ? "auto" : "none"};
     will-change: opacity;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
   `
       : `
     min-height: calc(100dvh - var(--header-height, 88px));
@@ -156,6 +175,10 @@ const Panel = styled.div<{ $paged: boolean; $initial: boolean }>`
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
 
@@ -237,6 +260,7 @@ export function PanelPager({ children, showDots = false }: PanelPagerProps) {
           pointerEvents: "none",
           autoAlpha: 0,
         });
+        nextPanel.scrollTop = 0;
         gsap.set(current, { pointerEvents: "none" });
 
         nextPanel.dispatchEvent(
