@@ -477,7 +477,7 @@ function PreviewStack({
 function ProjectDetails({ project }: { project: Project }) {
   return (
     <>
-      <DetailLabel>프로젝트 설명</DetailLabel>
+      <DetailLabel data-project-detail-label>프로젝트 설명</DetailLabel>
       <ProjectName data-morph>{project.name}</ProjectName>
       <Description data-morph>{project.description}</Description>
       <MetaList>
@@ -685,7 +685,20 @@ export function ProjectMorphView() {
       const titleLetters = scope.querySelectorAll("[data-project-letter]");
       const preview = scope.querySelector("[data-project-preview]");
       const previewLabel = scope.querySelector("[data-preview-label]");
+      const detailLabel = scope.querySelector("[data-project-detail-label]");
       const detailItems = scope.querySelectorAll("[data-morph]");
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (reduceMotion) {
+        gsap.set([title, preview, previewLabel, detailLabel, detailItems], {
+          autoAlpha: 1,
+          clearProps: "transform",
+        });
+        return;
+      }
 
       gsap.set(title, { autoAlpha: 1 });
       gsap.set(titleLetters, {
@@ -718,6 +731,16 @@ export function ProjectMorphView() {
             ease: "expo.out",
           },
           "-=0.5"
+        )
+        .from(
+          detailLabel,
+          {
+            autoAlpha: 0,
+            y: 18,
+            duration: 0.48,
+            ease: "power3.out",
+          },
+          "-=0.42"
         )
         .from(
           detailItems,

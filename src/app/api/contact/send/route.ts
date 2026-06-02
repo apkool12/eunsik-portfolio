@@ -54,7 +54,7 @@ function createMessage({ subject, replyTo, content }: MailMessage, from: string)
   ].join("\r\n");
 
   return [
-    `From: ${encodeHeader("Eunsik Portfolio")} <${from}>`,
+    `From: ${encodeHeader("Hamsik's Journey")} <${from}>`,
     `To: <${MAIL_TO}>`,
     `Reply-To: <${safeReplyTo}>`,
     `Subject: ${encodeHeader(`[Portfolio] ${safeSubject}`)}`,
