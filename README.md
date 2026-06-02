@@ -480,4 +480,4 @@ Vercel에 환경 변수를 등록하지 않으면 Contact 폼은 렌더링되지
 우은식
 
 - GitHub: [apkool12](https://github.com/apkool12)
-- Instagram: [@dmd._sik](https://www.instagram.com/dmd._sik)
+- Instagram: [@dmd_.sik](https://www.instagram.com/dmd_.sik)
