@@ -371,18 +371,18 @@ const Section = styled.section`
   position: relative;
   display: flex;
   align-items: center;
-  gap: clamp(48px, 6vw, 96px);
+  gap: clamp(40px, 5vw, 76px);
   width: 100%;
   min-height: calc(100dvh - var(--header-height, 88px));
   padding: 0 64px;
-  transform: translateY(-64px);
+  transform: translateY(-28px);
 
   @media (max-width: 1100px) {
     flex-direction: column;
     align-items: flex-start;
     gap: 32px;
     padding: 0 24px;
-    transform: translateY(-24px);
+    transform: translateY(-12px);
   }
 
   @media (max-width: 900px) {
@@ -459,10 +459,10 @@ const HeadAnim = styled.div`
 /** 소속·대회 탭 기준 높이 — 탭 전환 시 탭·구분선 위치 고정 */
 const TabContent = styled.div`
   width: 100%;
-  min-height: calc(max(min(52dvh, 520px), clamp(360px, 44vh, 480px)) + 200px);
+  min-height: calc(max(min(43dvh, 430px), clamp(300px, 36vh, 390px)) + 150px);
 
   @media (max-width: 1100px) {
-    min-height: calc(max(min(48dvh, 440px), clamp(320px, 40vh, 420px)) + 180px);
+    min-height: calc(max(min(42dvh, 380px), clamp(280px, 36vh, 360px)) + 136px);
   }
 
   @media (max-width: 900px) {
@@ -478,20 +478,20 @@ const ContentSide = styled.div`
   display: flex;
   flex-direction: column;
   flex: 0 1 auto;
-  width: min(100%, 960px);
+  width: min(100%, 860px);
   min-width: 0;
   margin-left: auto;
   padding-left: 32px;
-  padding-top: clamp(48px, 6vh, 80px);
+  padding-top: clamp(72px, 9svh, 108px);
   /* 탭 전환해도 블록 높이 동일 → 세로 중앙 정렬 시 탭 위치 유지 */
-  min-height: calc(128px + min(52dvh, 520px) + 200px);
+  min-height: calc(112px + min(43dvh, 430px) + 150px);
 
   @media (max-width: 1100px) {
-    min-height: calc(112px + min(48dvh, 440px) + 180px);
+    min-height: calc(104px + min(42dvh, 380px) + 136px);
     width: 100%;
     margin-left: 0;
     padding-left: 0;
-    padding-top: clamp(32px, 5vh, 56px);
+    padding-top: clamp(56px, 8svh, 84px);
   }
 
   @media (max-width: 900px) {
@@ -502,8 +502,8 @@ const ContentSide = styled.div`
 
 const TabRow = styled.div`
   display: flex;
-  gap: 32px;
-  margin-bottom: 16px;
+  gap: 24px;
+  margin-bottom: 12px;
 
   @media (max-width: 1100px) {
     gap: 12px;
@@ -517,9 +517,9 @@ const TabRow = styled.div`
 
 const TabDivider = styled(DividerAnim)`
   width: 100%;
-  max-width: 960px;
-  height: 12px;
-  margin: 32px 0;
+  max-width: 860px;
+  height: 9px;
+  margin: 24px 0;
   border-radius: 0;
   background: linear-gradient(90deg, #242424 0%, #fff 100%);
   transform-origin: left center;
@@ -532,14 +532,14 @@ const TabDivider = styled(DividerAnim)`
 
 const Tab = styled(TabAnim)<{ $active: boolean }>`
   box-sizing: border-box;
-  width: ${TAB_WIDTH};
-  min-width: ${TAB_WIDTH};
-  padding: 12px 0;
+  width: min(${TAB_WIDTH}, 12vw);
+  min-width: 172px;
+  padding: 10px 0;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-family: "Pretendard", sans-serif;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: ${({ $active }) => ($active ? 700 : 400)};
   line-height: normal;
   text-align: center;
@@ -568,7 +568,7 @@ const Tab = styled(TabAnim)<{ $active: boolean }>`
 const SectionHead = styled(HeadAnim)`
   display: flex;
   flex-direction: column;
-  margin-bottom: 32px;
+  margin-bottom: 22px;
 
   @media (max-width: 640px) {
     margin-bottom: 22px;
@@ -579,7 +579,7 @@ const SectionTitle = styled.h2`
   margin: 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: clamp(40px, 10vw, 84px);
+  font-size: clamp(40px, 7vw, 70px);
   font-weight: 700;
   line-height: 1.1;
 `;
@@ -588,17 +588,17 @@ const SectionSub = styled.p`
   margin: 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: clamp(18px, 4vw, 32px);
+  font-size: clamp(18px, 3vw, 27px);
   font-weight: 800;
   line-height: 1.1;
 `;
 
 const CardListViewport = styled.div`
-  max-height: min(52dvh, 520px);
+  max-height: min(43dvh, 430px);
   overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
-  max-width: 960px;
+  max-width: 860px;
   padding-right: 4px;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
@@ -610,7 +610,7 @@ const CardListViewport = styled.div`
   }
 
   @media (max-width: 1100px) {
-    max-height: min(48dvh, 440px);
+    max-height: min(42dvh, 380px);
   }
 
   @media (max-width: 900px) {
@@ -621,7 +621,7 @@ const CardListViewport = styled.div`
 const CardList = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 22px;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -637,7 +637,7 @@ const Card = styled(CardAnim)`
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 32px 28px;
+  padding: 24px 26px;
   border-radius: 12px;
   background: #000;
   color: #fff;
@@ -697,7 +697,7 @@ const CardPeriodLine = styled.span`
 
 const CarouselViewport = styled.div`
   width: 100%;
-  max-width: 960px;
+  max-width: 860px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
@@ -731,8 +731,8 @@ const CarouselTrack = styled.div`
 
 const CarouselSlide = styled.article`
   flex: 0 0 auto;
-  width: clamp(560px, 78vw, 720px);
-  height: clamp(360px, 44vh, 480px);
+  width: clamp(500px, 66vw, 640px);
+  height: clamp(300px, 38svh, 400px);
   border-radius: 12px;
   background: #000;
   overflow: hidden;
@@ -847,8 +847,8 @@ const CarouselSlidePlaceholder = styled.span`
 
 const ExternalViewport = styled.div`
   width: 100%;
-  max-width: 960px;
-  max-height: min(52dvh, 520px);
+  max-width: 860px;
+  max-height: min(43dvh, 430px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -862,7 +862,7 @@ const ExternalViewport = styled.div`
   }
 
   @media (max-width: 1100px) {
-    max-height: min(48dvh, 440px);
+    max-height: min(42dvh, 380px);
   }
 
   @media (max-width: 900px) {
