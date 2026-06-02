@@ -1,0 +1,507 @@
+"use client";
+
+import Link from "next/link";
+import { useRef } from "react";
+import styled from "@emotion/styled";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { BLOG_POSTS } from "@/constants/blog";
+
+const Page = styled.main`
+  min-height: calc(100dvh - var(--header-height, 88px));
+  padding: clamp(112px, 15vh, 168px) var(--page-gutter) 72px;
+  background: #fff;
+  overflow-x: hidden;
+
+  @media (max-width: 900px) {
+    padding-top: clamp(72px, 12vh, 112px);
+  }
+
+  @media (max-width: 480px) {
+    padding-bottom: 56px;
+  }
+`;
+
+const HeaderArea = styled.section`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 440px);
+  gap: clamp(48px, 7vw, 112px);
+  align-items: end;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+`;
+
+const Title = styled.h1`
+  margin: 0;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(72px, 16vw, 180px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+`;
+
+const Intro = styled.div`
+  padding-bottom: 16px;
+`;
+
+const IntroEyebrow = styled.span`
+  display: block;
+  color: #97c42f;
+  font-family: "Pretendard", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+`;
+
+const IntroText = styled.p`
+  margin: 18px 0 0;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 300;
+  line-height: 1.38;
+  word-break: keep-all;
+`;
+
+const Content = styled.section`
+  margin-top: clamp(42px, 6vh, 72px);
+`;
+
+const ArchiveBar = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(80px, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: clamp(24px, 3.5vh, 36px);
+
+  @media (max-width: 640px) {
+    grid-template-columns: auto minmax(34px, 1fr);
+    gap: 12px;
+  }
+`;
+
+const ArchiveLabel = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 0 30px;
+  border: 3px solid #000;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  line-height: 1;
+
+  @media (max-width: 640px) {
+    min-height: 52px;
+    padding: 0 22px;
+  }
+`;
+
+const ArchiveLine = styled.span`
+  position: relative;
+  height: 3px;
+  background: #000;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #97c42f;
+    transform: translateY(-50%);
+  }
+`;
+
+const ArchiveCount = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 20px;
+  border: 3px solid #000;
+  border-radius: 999px;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 900;
+  line-height: 1;
+
+  @media (max-width: 640px) {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 44px;
+    padding: 0 16px;
+  }
+`;
+
+const Feed = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: clamp(34px, 5vh, 54px);
+`;
+
+const PostLink = styled(Link)`
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) minmax(120px, 180px);
+  gap: 26px;
+  align-items: start;
+  min-height: 132px;
+  color: #000;
+  color: #000;
+  text-decoration: none;
+  transition: transform 0.22s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateX(10px);
+    outline: none;
+
+    h2 {
+      color: #6f941c;
+    }
+
+    [data-blog-thumb] {
+      border-color: #97c42f;
+      background: #fff;
+    }
+
+    [data-blog-thumb-icon],
+    [data-blog-tag] {
+      border-color: #97c42f;
+      color: #6f941c;
+    }
+  }
+
+  @media (max-width: 760px) {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 14px;
+    min-height: 0;
+
+    &:hover,
+    &:focus-visible {
+      transform: translateX(4px);
+    }
+  }
+`;
+
+const Thumbnail = styled.div`
+  position: relative;
+  width: 92px;
+  height: 92px;
+  border: 3px solid #000;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 66% 32%, #97c42f 0 6px, transparent 7px),
+    linear-gradient(135deg, #fff 0 34%, #111 34% 44%, #fff 44% 60%, #000 60%);
+  overflow: visible;
+
+  &[data-tone="green"] {
+    background:
+      radial-gradient(circle at 66% 32%, #97c42f 0 6px, transparent 7px),
+      repeating-linear-gradient(90deg, #000 0 8px, #fff 8px 16px);
+  }
+
+  &[data-tone="mono"] {
+    background:
+      radial-gradient(circle at 66% 32%, #97c42f 0 6px, transparent 7px),
+      repeating-linear-gradient(135deg, #111 0 8px, #fff 8px 16px);
+  }
+
+  @media (max-width: 760px) {
+    width: 72px;
+    height: 72px;
+  }
+
+  @media (max-width: 480px) {
+    width: 58px;
+    height: 58px;
+    border-width: 2px;
+  }
+`;
+
+const ThumbnailIcon = styled.span`
+  position: absolute;
+  right: -10px;
+  bottom: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 3px solid #000;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 18px;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+
+  @media (max-width: 480px) {
+    right: -8px;
+    bottom: -7px;
+    width: 28px;
+    height: 28px;
+    border-width: 2px;
+    font-size: 10px;
+  }
+`;
+
+const PostMain = styled.div`
+  min-width: 0;
+`;
+
+const PostTitle = styled.h2`
+  margin: 0;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: 0;
+  word-break: keep-all;
+`;
+
+const PostExcerpt = styled.p`
+  max-width: 980px;
+  margin: 10px 0 0;
+  color: #999;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(17px, 2.4vw, 28px);
+  font-weight: 600;
+  line-height: 1.35;
+  word-break: keep-all;
+`;
+
+const TagRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+`;
+
+const Tag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  @media (max-width: 480px) {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+`;
+
+const DateText = styled.span`
+  justify-self: end;
+  margin-top: 56px;
+  color: #b7b7b7;
+  font-family: "Pretendard", sans-serif;
+  font-size: clamp(18px, 2.4vw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+
+  @media (max-width: 760px) {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0;
+  }
+`;
+
+const AuthorNote = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-top: clamp(64px, 9vh, 96px);
+  padding-top: 24px;
+  border-top: 2px solid #000;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const AuthorAvatar = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  font-family: "Pretendard", sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+`;
+
+const AuthorCopy = styled.div`
+  min-width: 0;
+`;
+
+const AuthorTitle = styled.h2`
+  margin: 0;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.2;
+`;
+
+const AuthorText = styled.p`
+  margin: 8px 0 0;
+  color: #777;
+  font-family: "Pretendard", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.55;
+  word-break: keep-all;
+`;
+
+export default function BlogPage() {
+  const scopeRef = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const scope = scopeRef.current;
+      if (!scope) return;
+
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      if (reduceMotion) return;
+
+      const title = scope.querySelector("[data-blog-title]");
+      const intro = scope.querySelector("[data-blog-intro]");
+      const archive = scope.querySelector("[data-blog-archive]");
+      const posts = scope.querySelectorAll("[data-blog-post]");
+      const thumbs = scope.querySelectorAll("[data-blog-thumb]");
+      const author = scope.querySelector("[data-blog-author]");
+
+      gsap
+        .timeline({ defaults: { ease: "power3.out" } })
+        .from(title, { y: 42, autoAlpha: 0, duration: 0.72 })
+        .from(intro, { y: 26, autoAlpha: 0, duration: 0.58 }, "-=0.34")
+        .from(
+          archive,
+          { clipPath: "inset(0 100% 0 0)", autoAlpha: 0, duration: 0.58 },
+          "-=0.18"
+        )
+        .from(
+          thumbs,
+          {
+            scale: 0.72,
+            rotation: -10,
+            autoAlpha: 0,
+            duration: 0.48,
+            stagger: 0.1,
+            ease: "back.out(1.6)",
+          },
+          "-=0.32"
+        )
+        .from(
+          posts,
+          {
+            x: -28,
+            autoAlpha: 0,
+            duration: 0.52,
+            stagger: 0.12,
+            ease: "power3.out",
+          },
+          "-=0.18"
+        )
+        .from(author, { y: 18, autoAlpha: 0, duration: 0.42 }, "-=0.28");
+    },
+    { scope: scopeRef }
+  );
+
+  return (
+    <Page ref={scopeRef}>
+      <HeaderArea>
+        <Title data-blog-title>Blog,</Title>
+        <Intro data-blog-intro>
+          <IntroEyebrow>write, debug, refine</IntroEyebrow>
+          <IntroText>
+            만들면서 배운 것들을 짧고 선명하게 남깁니다. 코드와 화면 사이에서
+            오래 고민한 흔적을 모으는 공간입니다.
+          </IntroText>
+        </Intro>
+      </HeaderArea>
+
+      <Content>
+        <ArchiveBar data-blog-archive aria-label="블로그 아카이브">
+          <ArchiveLabel>Archive</ArchiveLabel>
+          <ArchiveLine />
+          <ArchiveCount>{BLOG_POSTS.length} Notes</ArchiveCount>
+        </ArchiveBar>
+
+        <Feed aria-label="블로그 글 목록">
+          {BLOG_POSTS.map((post) => (
+            <PostLink
+              key={post.number}
+              href={`/blog/${post.slug}`}
+              data-blog-post
+            >
+              <Thumbnail data-tone={post.tone} data-blog-thumb>
+                <ThumbnailIcon data-blog-thumb-icon>
+                  {post.mark}
+                </ThumbnailIcon>
+              </Thumbnail>
+              <PostMain>
+                <PostTitle>{post.title}</PostTitle>
+                <PostExcerpt>{post.excerpt}</PostExcerpt>
+                <TagRow>
+                  {post.tags.map((tag) => (
+                    <Tag key={tag} data-blog-tag>
+                      {tag}
+                    </Tag>
+                  ))}
+                </TagRow>
+              </PostMain>
+              <DateText>{post.date}</DateText>
+            </PostLink>
+          ))}
+        </Feed>
+
+        <AuthorNote data-blog-author>
+          <AuthorAvatar>EW</AuthorAvatar>
+          <AuthorCopy>
+            <AuthorTitle>Eunsik Woo</AuthorTitle>
+            <AuthorText>
+              배운 내용을 그냥 지나치지 않기 위해 기록합니다. 구현 과정의 선택,
+              막혔던 지점, 다시 읽고 싶은 생각들을 블로그에 차곡차곡 남깁니다.
+            </AuthorText>
+          </AuthorCopy>
+        </AuthorNote>
+      </Content>
+    </Page>
+  );
+}

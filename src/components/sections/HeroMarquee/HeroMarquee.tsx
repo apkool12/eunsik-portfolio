@@ -67,9 +67,13 @@ const Item = styled.span`
   white-space: nowrap;
   color: #b7b7b7;
   font-family: "Pretendard", sans-serif;
-  font-size: 96px;
+  font-size: clamp(42px, 9vw, 96px);
   font-style: normal;
   line-height: normal;
+
+  @media (max-width: 640px) {
+    padding: 0 28px;
+  }
 `;
 
 const Light = styled.span`

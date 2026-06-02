@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styled from "@emotion/styled";
 
 type NavItemProps = {
@@ -35,6 +37,16 @@ const NavLink = styled(Link)`
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
+  &[data-active="true"] {
+    color: #000;
+    font-weight: 600;
+
+    &::before {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
   &:hover,
   &:focus-visible {
     color: #000;
@@ -58,6 +70,12 @@ const NavLink = styled(Link)`
       transition: opacity 0.1s linear;
     }
   }
+
+  @media (max-width: 760px) {
+    min-height: 34px;
+    padding: 8px clamp(8px, 2.4vw, 14px);
+    font-size: clamp(14px, 3.7vw, 17px);
+  }
 `;
 
 const Label = styled.span`
@@ -74,9 +92,24 @@ const Label = styled.span`
   }
 `;
 
+function isActivePath(pathname: string, href: string) {
+  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+}
+
 export function NavItem({ href, label }: NavItemProps) {
+  const pathname = usePathname();
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    setActive(isActivePath(pathname, href));
+  }, [pathname, href]);
+
   return (
-    <NavLink href={href}>
+    <NavLink
+      href={href}
+      data-active={active ? "true" : "false"}
+      aria-current={active ? "page" : undefined}
+    >
       <Label data-text={label}>{label}</Label>
     </NavLink>
   );

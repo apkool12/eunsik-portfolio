@@ -1,0 +1,1 @@
+export { AboutAffiliation } from "./AboutAffiliation";

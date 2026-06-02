@@ -4,6 +4,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
+Create `.env.local` for the Contact mail API:
+
+```bash
+NAVER_SMTP_USER=apkool12@naver.com
+NAVER_SMTP_APP_PASSWORD=your-naver-application-password
+```
+
+The Contact form sends messages to `apkool12@naver.com`. Enable SMTP/POP3 access and create a Naver application password before using it.
+
 ```bash
 npm run dev
 # or

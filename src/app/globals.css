@@ -5,6 +5,28 @@
   --background: #ffffff;
   --foreground: #111111;
   --accent: #97c42f;
+  --global-scale: 0.9;
+  --header-height: 88px;
+  --page-gutter: 64px;
+  --project-details-width: clamp(340px, 28vw, 440px);
+  --project-content-gap: clamp(28px, 3.5vw, 48px);
+  --project-dots-reserve: clamp(52px, 5vw, 80px);
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --page-gutter: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-height: 72px;
+    --page-gutter: 18px;
+    --project-details-width: minmax(0, 1fr);
+    --project-content-gap: 18px;
+    --project-dots-reserve: 0px;
+  }
 }
 
 html {
@@ -26,6 +48,18 @@ body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.pageScaleWrapper {
+  zoom: var(--global-scale);
+}
+
+@supports not (zoom: 1) {
+  .pageScaleWrapper {
+    transform: scale(var(--global-scale));
+    transform-origin: top left;
+    width: calc(100% / var(--global-scale));
+  }
 }
 
 * {

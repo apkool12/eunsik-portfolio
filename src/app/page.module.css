@@ -12,3 +12,22 @@
   margin-top: 200px;
   padding-left: var(--hero-padding-left);
 }
+
+@media (max-width: 900px) {
+  .hero {
+    --hero-padding-left: var(--page-gutter);
+    padding-top: clamp(56px, 10vh, 96px);
+  }
+
+  .heroTitle {
+    margin-top: clamp(96px, 18vh, 160px);
+    padding-left: var(--hero-padding-left);
+    padding-right: var(--page-gutter);
+  }
+}
+
+@media (max-width: 480px) {
+  .heroTitle {
+    margin-top: clamp(72px, 16vh, 120px);
+  }
+}

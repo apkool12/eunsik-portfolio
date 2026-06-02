@@ -12,11 +12,16 @@ const Title = styled.h1`
   margin: 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: 216px;
+  font-size: clamp(64px, 15vw, 216px);
   font-style: normal;
   font-weight: 900;
   line-height: normal;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
+
+  @media (max-width: 480px) {
+    font-size: clamp(52px, 18vw, 72px);
+    line-height: 1.05;
+  }
 `;
 
 const Line = styled.span`
@@ -88,7 +93,15 @@ export function HeroTitle() {
       const line1Width = line1.scrollWidth;
       const line2Width = line2.scrollWidth;
       const mWidth = mEl.offsetWidth;
-      const boxWidth = HERO_PADDING_LEFT + mWidth - BOX_RIGHT_GAP;
+      const cssHeroPadding = Number.parseFloat(
+        window
+          .getComputedStyle(scopeRef.current ?? line1)
+          .getPropertyValue("--hero-padding-left")
+      );
+      const heroPadding = Number.isFinite(cssHeroPadding)
+        ? cssHeroPadding
+        : HERO_PADDING_LEFT;
+      const boxWidth = heroPadding + mWidth - BOX_RIGHT_GAP;
 
       const line1Chars = "This is".length;
       const line2Chars = "y Journey".length;

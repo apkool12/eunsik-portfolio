@@ -18,6 +18,12 @@ const slideDown = keyframes`
   }
 `;
 
+const HeaderWrap = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 100;
+`;
+
 const HeaderBar = styled.header`
   display: flex;
   align-items: center;
@@ -32,6 +38,12 @@ const HeaderBar = styled.header`
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+
+  @media (max-width: 760px) {
+    min-height: var(--header-height, 72px);
+    padding: 18px var(--page-gutter);
+    border-radius: 0 0 22px 22px;
+  }
 `;
 
 const LogoLink = styled(Link)`
@@ -45,6 +57,11 @@ const LogoLink = styled(Link)`
     outline: none;
     opacity: 0.85;
   }
+
+  svg {
+    width: clamp(42px, 12vw, 64px);
+    height: auto;
+  }
 `;
 
 const Nav = styled.nav`
@@ -57,19 +74,29 @@ const Nav = styled.nav`
   max-width: 920px;
   margin-right: 0;
   margin-left: auto;
+
+  @media (max-width: 760px) {
+    gap: clamp(14px, 4vw, 26px);
+    justify-content: flex-end;
+    max-width: none;
+    padding-right: 0;
+    margin-left: 18px;
+  }
 `;
 
 export function Header() {
   return (
-    <HeaderBar>
-      <LogoLink href="/" aria-label="홈으로 이동">
-        <Logo />
-      </LogoLink>
-      <Nav aria-label="주요 메뉴">
-        {NAV_ITEMS.map((item) => (
-          <NavItem key={item.href} href={item.href} label={item.label} />
-        ))}
-      </Nav>
-    </HeaderBar>
+    <HeaderWrap>
+      <HeaderBar>
+        <LogoLink href="/" aria-label="홈으로 이동">
+          <Logo />
+        </LogoLink>
+        <Nav aria-label="주요 메뉴">
+          {NAV_ITEMS.map((item) => (
+            <NavItem key={item.href} href={item.href} label={item.label} />
+          ))}
+        </Nav>
+      </HeaderBar>
+    </HeaderWrap>
   );
 }

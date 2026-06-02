@@ -23,7 +23,15 @@ const Section = styled.section`
   align-items: center;
   justify-content: space-between;
   gap: 48px;
-  padding: 220px 64px 0;
+  width: 100%;
+  padding: 0 var(--page-gutter);
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 36px;
+  }
 `;
 
 const Left = styled.div`
@@ -42,6 +50,13 @@ const PhotoRing = styled.div`
   border: 1.5px solid #e3e3e3;
   border-radius: 50%;
   will-change: transform, opacity;
+
+  @media (max-width: 900px) {
+    order: -1;
+    width: min(72vw, 340px);
+    margin-right: 0;
+    padding: 12px;
+  }
 `;
 
 const Photo = styled.div`
@@ -56,10 +71,14 @@ const Title = styled.h1`
   margin: 0;
   color: #000;
   font-family: "Pretendard", sans-serif;
-  font-size: 180px;
+  font-size: clamp(72px, 14vw, 180px);
   font-style: normal;
   font-weight: 900;
   line-height: 123.871%;
+
+  @media (max-width: 480px) {
+    font-size: clamp(58px, 19vw, 82px);
+  }
 `;
 
 const CharMask = styled.span`
@@ -87,7 +106,7 @@ const Ghost = styled.p`
   white-space: pre-line;
   color: #949494;
   font-family: "Pretendard", sans-serif;
-  font-size: 88px;
+  font-size: clamp(42px, 7vw, 88px);
   font-style: normal;
   font-weight: 900;
   line-height: 123.871%;
@@ -96,6 +115,11 @@ const Ghost = styled.p`
   pointer-events: none;
   user-select: none;
   will-change: transform;
+
+  @media (max-width: 640px) {
+    left: 18px;
+    filter: blur(3px);
+  }
 `;
 
 const Greeting = styled.div`
@@ -113,11 +137,15 @@ const Line = styled.span`
   color: #000;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
   font-family: "Pretendard", sans-serif;
-  font-size: 72px;
+  font-size: clamp(34px, 6.4vw, 72px);
   font-style: normal;
   font-weight: 100;
   line-height: 123.871%;
   will-change: transform;
+
+  @media (max-width: 480px) {
+    font-size: clamp(30px, 9vw, 40px);
+  }
 `;
 
 const InfoCard = styled.div`
@@ -133,12 +161,18 @@ const InfoCard = styled.div`
   border-radius: 10px;
   background: linear-gradient(90deg, #000 0%, #fff 100%);
   will-change: transform, opacity;
+
+  @media (max-width: 640px) {
+    min-height: 116px;
+    margin-top: 34px;
+    padding: 24px;
+  }
 `;
 
 const InfoText = styled.div`
   color: #bcbcbc;
   font-family: "Pretendard", sans-serif;
-  font-size: 24px;
+  font-size: clamp(17px, 4.2vw, 24px);
   font-style: normal;
   font-weight: 300;
   line-height: 123.871%;
@@ -147,6 +181,11 @@ const InfoText = styled.div`
 const InfoRow = styled(InfoText)`
   display: flex;
   gap: 32px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 6px;
+  }
 `;
 
 const Divider = styled.div`
@@ -179,6 +218,11 @@ const SocialLink = styled.a`
 
   &:active {
     opacity: 0.7;
+  }
+
+  img {
+    width: clamp(32px, 9vw, 40px);
+    height: clamp(32px, 9vw, 40px);
   }
 `;
 

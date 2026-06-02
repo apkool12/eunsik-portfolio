@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   description: "포트폴리오",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,7 +24,7 @@ export default function RootLayout({
       <body>
         <AppProviders>
           <Header />
-          {children}
+          <div className="pageScaleWrapper">{children}</div>
         </AppProviders>
       </body>
     </html>
