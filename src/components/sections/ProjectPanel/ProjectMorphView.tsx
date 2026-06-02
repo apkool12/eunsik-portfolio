@@ -175,19 +175,15 @@ const PreviewMedia = styled.div`
   backface-visibility: hidden;
 `;
 
-/** 슬롯 비율과 무관하게 항상 꽉 채움 (center + min-size cover) */
+/** 미리보기 슬롯 안에서 이미지 전체가 보이도록 비율 유지 */
 const PreviewMediaImg = styled.img`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  transform: translate(-50%, -50%) scale(1.06);
-  object-fit: cover;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: clamp(18px, 2.4vw, 36px);
+  object-fit: contain;
+  object-position: center;
   filter: grayscale(100%) brightness(0.88);
   transition: filter 0.45s ease;
   backface-visibility: hidden;
