@@ -27,9 +27,11 @@ const Page = styled.main`
     padding-top: clamp(72px, 12vh, 112px);
   }
 
-  @media (max-width: 480px) {
-    --blog-gutter: clamp(28px, 7vw, 34px);
+  @media (max-width: 640px) {
+    --blog-gutter: clamp(28px, 7vw, 36px);
+  }
 
+  @media (max-width: 480px) {
     padding-top: 84px;
     padding-bottom: 56px;
   }
@@ -246,7 +248,6 @@ const PostLink = styled(Link)`
       background: #fff;
     }
 
-    [data-blog-thumb-icon],
     [data-blog-tag] {
       border-color: #97c42f;
       color: #6f941c;
@@ -302,34 +303,6 @@ const Thumbnail = styled.div`
     width: 58px;
     height: 58px;
     border-width: 2px;
-  }
-`;
-
-const ThumbnailIcon = styled.span`
-  position: absolute;
-  right: -10px;
-  bottom: -8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 3px solid #000;
-  border-radius: 50%;
-  background: #fff;
-  font-size: 18px;
-  color: #000;
-  font-family: "Pretendard", sans-serif;
-  font-size: 12px;
-  font-weight: 900;
-
-  @media (max-width: 480px) {
-    right: -8px;
-    bottom: -7px;
-    width: 28px;
-    height: 28px;
-    border-width: 2px;
-    font-size: 10px;
   }
 `;
 
@@ -497,6 +470,7 @@ export default function BlogPage() {
       const posts = scope.querySelectorAll("[data-blog-post]");
       const thumbs = scope.querySelectorAll("[data-blog-thumb]");
       const author = scope.querySelector("[data-blog-author]");
+      const isMobile = window.matchMedia("(max-width: 640px)").matches;
 
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
@@ -527,7 +501,8 @@ export default function BlogPage() {
         .from(
           posts,
           {
-            x: -28,
+            x: isMobile ? 0 : -28,
+            y: isMobile ? 18 : 0,
             autoAlpha: 0,
             duration: 0.52,
             stagger: 0.12,
@@ -585,11 +560,7 @@ export default function BlogPage() {
                 window.scrollTo(0, 0);
               }}
             >
-              <Thumbnail data-tone={post.tone} data-blog-thumb>
-                <ThumbnailIcon data-blog-thumb-icon>
-                  {post.mark}
-                </ThumbnailIcon>
-              </Thumbnail>
+              <Thumbnail data-tone={post.tone} data-blog-thumb />
               <PostMain>
                 <PostTitle>{post.title}</PostTitle>
                 <PostExcerpt>{post.excerpt}</PostExcerpt>

@@ -163,26 +163,6 @@ const HeroThumb = styled.div`
     transform: translate(-50%, -50%);
   }
 
-  &::after {
-    content: attr(data-mark);
-    position: absolute;
-    right: 12px;
-    bottom: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border: 3px solid #000;
-    border-radius: 50%;
-    background: #fff;
-    color: #000;
-    font-family: "Pretendard", sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-    line-height: 1;
-  }
-
   @media (max-width: 900px) {
     justify-self: start;
     width: 180px;
@@ -605,7 +585,6 @@ export function BlogArticle({ post }: { post: BlogPost }) {
         <HeroThumb
           data-tone={post.tone}
           data-number={post.number}
-          data-mark={post.mark}
           data-article-thumb
           aria-hidden
         />

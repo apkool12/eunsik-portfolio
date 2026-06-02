@@ -1234,6 +1234,7 @@ export function AboutAffiliation() {
   const carouselWheelCooldown = useRef(0);
   const tabSwitchTl = useRef<gsap.core.Timeline | null>(null);
   const isTabAnimating = useRef(false);
+  const hasIntroPlayed = useRef(false);
   const [activeTab, setActiveTab] = useState<TabId>("affiliation");
 
   const { title, subtitle } = TAB_PANELS[activeTab];
@@ -1403,12 +1404,6 @@ export function AboutAffiliation() {
           autoAlpha: 0,
           x: 48,
         });
-      } else if (tabId === "external") {
-        gsap.set(inPanel.querySelectorAll("[data-external-item]"), {
-          autoAlpha: 0,
-          x: -24,
-          rotate: -1.5,
-        });
       }
     });
 
@@ -1437,21 +1432,6 @@ export function AboutAffiliation() {
           stagger: 0.1,
         },
         "-=0.2"
-      );
-    } else if (tabId === "external") {
-      tl.to(
-        scope.querySelectorAll<HTMLElement>(
-          `[data-tab-panel="external"] [data-external-item]`
-        ),
-        {
-          autoAlpha: 1,
-          x: 0,
-          rotate: 0,
-          duration: 0.48,
-          ease: "back.out(1.25)",
-          stagger: 0.075,
-        },
-        "-=0.18"
       );
     } else {
       tl.set(scope.querySelector(`[data-tab-panel="${tabId}"]`), {
@@ -1574,16 +1554,23 @@ export function AboutAffiliation() {
       let tl = buildTimeline();
 
       const play = () => {
+        if (hasIntroPlayed.current) {
+          setVisible();
+          return;
+        }
         if (tl.isActive()) return;
         tl.kill();
         setHidden();
         tl = buildTimeline();
+        tl.eventCallback("onComplete", () => {
+          hasIntroPlayed.current = true;
+        });
         tl.play(0);
       };
 
       const reset = () => {
         tl.kill();
-        setHidden();
+        setVisible();
       };
 
       const onPanelEnter = () => play();
