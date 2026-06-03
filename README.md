@@ -2,6 +2,8 @@
 
 우은식의 개인 포트폴리오 웹사이트입니다. 단순히 이력과 프로젝트를 나열하는 페이지가 아니라, 화면 전환, 커서 반응, 모바일 흐름, 블로그 글 읽기 경험까지 하나의 인터랙션 경험으로 설계한 포트폴리오입니다.
 
+배포 주소: [https://hamsik.kr](https://hamsik.kr)
+
 이 프로젝트는 Next.js App Router 기반으로 제작했으며, Emotion으로 스타일 시스템을 구성하고 GSAP으로 페이지별 모션을 구현했습니다. About, Projects, Blog, Contact 각 페이지가 서로 다른 성격을 가지되, 검정/흰색 중심의 강한 타이포그래피와 연두색 포인트 컬러로 하나의 톤을 유지하도록 만들었습니다.
 
 ## 주요 목표
@@ -432,7 +434,7 @@ npm run lint
 
 ## 배포
 
-Vercel 배포를 기준으로 구성되어 있습니다.
+Vercel 배포를 기준으로 구성되어 있으며, 현재 운영 주소는 [https://hamsik.kr](https://hamsik.kr)입니다.
 
 배포 시 확인할 것:
 
@@ -441,8 +443,90 @@ Vercel 배포를 기준으로 구성되어 있습니다.
 - `NAVER_SMTP_USER`
 - `NAVER_SMTP_APP_PASSWORD`
 - Contact API는 `runtime = "nodejs"`를 사용합니다.
+- 커스텀 도메인 `hamsik.kr`의 DNS가 Vercel 프로젝트를 바라보도록 설정되어 있어야 합니다.
 
 Vercel에 환경 변수를 등록하지 않으면 Contact 폼은 렌더링되지만 메일 전송은 실패합니다.
+
+## 트러블슈팅 기록
+
+### 다른 화면에서 90% 줌이 필요해 보이던 문제
+
+초기 화면은 개발 환경 기준으로는 안정적이었지만, 노트북 해상도나 세로가 낮은 화면에서는 콘텐츠가 잘려 90% 브라우저 줌이 필요해 보이는 문제가 있었습니다. 전체를 고정 `zoom: 0.9`로 줄이는 방식은 임시 해결에 가깝기 때문에, 전역 `--global-scale`을 화면 폭과 높이에 맞춰 계산하고 모바일에서는 실제 반응형 레이아웃이 작동하도록 `1`로 되돌렸습니다.
+
+확인 기준:
+
+- 데스크톱에서는 큰 타이포그래피와 패널 비율이 유지되는지 확인합니다.
+- 세로가 낮은 화면에서는 프로젝트 프리뷰와 설명 영역이 한 화면 안에 들어오는지 확인합니다.
+- 모바일에서는 scale 축소가 아니라 1열 자연 스크롤 구조로 보이는지 확인합니다.
+
+관련 파일:
+
+- `src/app/globals.css`
+- `src/components/layout/PageScaleWrapper/PageScaleWrapper.tsx`
+- `src/app/page.module.css`
+
+### About 페이지에서 아래 콘텐츠가 있는지 알기 어려웠던 문제
+
+About 페이지는 데스크톱에서 패널 단위 이동을 사용하기 때문에 첫 화면만 보면 스크롤 가능한 페이지인지 모호할 수 있었습니다. Projects 페이지와 같은 점 네비게이션 언어를 재사용해 현재 위치와 다음 섹션이 있다는 신호를 추가했고, `1100px` 이하에서는 패널 이동을 풀어 자연 스크롤로 전환했습니다.
+
+확인 기준:
+
+- 데스크톱에서는 점 네비게이션으로 현재 섹션 위치가 드러나야 합니다.
+- 내부 스크롤이 필요한 영역에서는 패널 전환보다 내부 스크롤이 우선되어야 합니다.
+- 모바일/태블릿에서는 콘텐츠가 끊기지 않고 문서 흐름으로 이어져야 합니다.
+
+관련 파일:
+
+- `src/components/layout/PanelPager/PanelPager.tsx`
+- `src/app/about/page.tsx`
+- `src/components/sections/AboutAffiliation/AboutAffiliation.tsx`
+
+### Projects 페이지가 모바일에서 전시형 구조를 유지하던 문제
+
+데스크톱의 풀스크린 전시형 패널은 프로젝트 하나에 집중하기 좋지만, 모바일에서는 고정 프레임과 점 네비게이션이 콘텐츠 접근성을 떨어뜨릴 수 있었습니다. 모바일에서는 프리뷰 이미지를 먼저 보여주고, 설명과 메타 정보를 아래에 이어 배치하는 자연 스크롤 구조로 분리했습니다.
+
+확인 기준:
+
+- 데스크톱에서는 wheel, touch, pointer 입력으로 프로젝트 전환이 부드럽게 동작해야 합니다.
+- 모바일에서는 이미지, 설명, 기간, 팀원, 기술 스택, GitHub 버튼 순서로 읽혀야 합니다.
+- 점 네비게이션이 본문이나 버튼을 가리지 않아야 합니다.
+
+관련 파일:
+
+- `src/components/sections/ProjectPanel/ProjectMorphView.tsx`
+- `src/components/sections/ProjectPanel/ProjectPanel.tsx`
+- `src/constants/projects.ts`
+
+### Blog 상세의 Index와 코드블록이 모바일 폭을 밀어내던 문제
+
+블로그 상세 페이지의 Index와 코드블록은 데스크톱에서는 읽기 편했지만, 모바일에서는 본문 폭을 밀어내거나 가로 overflow를 만들 수 있었습니다. 모바일에서 Index를 sticky 사이드바가 아닌 가로 pill 형태로 풀고, 코드블록은 작은 화면 안에서 줄바꿈되도록 조정했습니다.
+
+확인 기준:
+
+- 모바일에서 본문이 좌우로 흔들리지 않아야 합니다.
+- Index pill은 가로 스크롤 가능하되 페이지 전체 폭을 넘기지 않아야 합니다.
+- 코드블록은 화면을 밀지 않고 내부에서 읽을 수 있어야 합니다.
+
+관련 파일:
+
+- `src/app/blog/[slug]/page.tsx`
+- `src/components/sections/BlogArticle/BlogArticle.tsx`
+- `src/components/ui/BlogCodeBlock/BlogCodeBlock.tsx`
+
+### Contact 메일 전송 실패
+
+Contact API는 Naver SMTP를 직접 사용합니다. 로컬이나 Vercel 환경에 SMTP 환경 변수가 없거나, 네이버 메일에서 POP3/SMTP 사용이 꺼져 있으면 전송은 실패하고 500 응답을 반환합니다.
+
+확인 순서:
+
+1. `.env.local` 또는 Vercel Environment Variables에 `NAVER_SMTP_USER`와 `NAVER_SMTP_APP_PASSWORD`가 등록되어 있는지 확인합니다.
+2. `NAVER_SMTP_APP_PASSWORD`에 네이버 계정 비밀번호가 아니라 SMTP 인증용 비밀번호가 들어갔는지 확인합니다.
+3. 네이버 메일 설정에서 POP3/SMTP 사용이 허용되어 있는지 확인합니다.
+4. Vercel 배포 후 Contact API가 Node.js runtime으로 동작하는지 확인합니다.
+
+관련 파일:
+
+- `src/app/api/contact/send/route.ts`
 
 ## 접근성과 사용성 고려
 
