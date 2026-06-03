@@ -216,8 +216,7 @@ const ArticleGrid = styled.div`
 `;
 
 const IndexRail = styled.aside`
-  position: sticky;
-  top: calc(var(--header-height, 88px) + 34px);
+  position: relative;
   z-index: 5;
   align-self: start;
   padding-bottom: 24px;
@@ -237,6 +236,7 @@ const IndexRailInner = styled.div`
   position: relative;
   padding-top: 8px;
   background: #fff;
+  will-change: transform;
 
   @media (max-width: 900px) {
     margin: 0;
@@ -246,6 +246,7 @@ const IndexRailInner = styled.div`
     border-top: 2px solid #000;
     border-bottom: 1px solid #dedede;
     box-shadow: none;
+    will-change: auto;
   }
 
   @media (max-width: 480px) {
@@ -583,6 +584,76 @@ export function BlogArticle({ post }: { post: BlogPost }) {
     };
   }, [post.slug]);
 
+  useEffect(() => {
+    const scope = scopeRef.current;
+    if (!scope) return;
+
+    const grid = scope.querySelector<HTMLElement>("[data-article-grid]");
+    const railInner = scope.querySelector<HTMLElement>("[data-article-rail-inner]");
+    if (!grid || !railInner) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    let yTo: gsap.QuickToFunc | null = null;
+
+    const getHeaderOffset = () => {
+      const headerHeight = Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--header-height")
+      );
+      return (Number.isFinite(headerHeight) ? headerHeight : 88) + 34;
+    };
+
+    const resetRail = () => {
+      if (yTo) {
+        yTo = null;
+      }
+      gsap.set(railInner, { clearProps: "transform" });
+    };
+
+    const updateRail = () => {
+      if (mediaQuery.matches || reduceMotion) {
+        resetRail();
+        return;
+      }
+
+      if (!yTo) {
+        yTo = gsap.quickTo(railInner, "y", {
+          duration: 0.58,
+          ease: "power3.out",
+        });
+      }
+
+      const gridTop = grid.getBoundingClientRect().top + window.scrollY;
+      const offset = getHeaderOffset();
+      const maxY = Math.max(0, grid.scrollHeight - railInner.offsetHeight);
+      const nextY = gsap.utils.clamp(
+        0,
+        maxY,
+        window.scrollY - gridTop + offset
+      );
+
+      yTo(nextY);
+    };
+
+    const onMediaChange = () => updateRail();
+
+    updateRail();
+    requestAnimationFrame(updateRail);
+    window.addEventListener("scroll", updateRail, { passive: true });
+    window.addEventListener("resize", updateRail);
+    mediaQuery.addEventListener("change", onMediaChange);
+
+    return () => {
+      window.removeEventListener("scroll", updateRail);
+      window.removeEventListener("resize", updateRail);
+      mediaQuery.removeEventListener("change", onMediaChange);
+      resetRail();
+    };
+  }, [post.slug]);
+
   return (
     <Page ref={scopeRef}>
       <BackLink href="/blog" data-article-back>
@@ -613,9 +684,9 @@ export function BlogArticle({ post }: { post: BlogPost }) {
         />
       </Hero>
 
-      <ArticleGrid>
+      <ArticleGrid data-article-grid>
         <IndexRail data-article-rail>
-          <IndexRailInner>
+          <IndexRailInner data-article-rail-inner>
             <RailTitle>Index</RailTitle>
             <RailList>
               {post.sections.map((section, index) => (
