@@ -63,11 +63,11 @@ const LogoLink = styled(Link)`
   }
 
   img {
-    width: clamp(88px, 20vw, 132px);
+    width: clamp(42px, 12vw, 64px);
     height: auto;
 
     @media (max-width: 420px) {
-      width: 72px;
+      width: 34px;
     }
   }
 `;
