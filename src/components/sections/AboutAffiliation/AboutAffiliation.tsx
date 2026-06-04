@@ -13,6 +13,11 @@ import Image from "next/image";
 import styled from "@emotion/styled";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import {
+  BRAND_LOGO,
+  BRAND_LOGO_HEIGHT,
+  BRAND_LOGO_WIDTH,
+} from "@/lib/seo/site";
 
 type TabId = "affiliation" | "competition" | "external";
 
@@ -1615,10 +1620,10 @@ export function AboutAffiliation() {
       <WooVerticalBar data-bar aria-hidden />
       <NameSide data-name>
         <Image
-          src="/WooEunsik.svg"
+          src={BRAND_LOGO}
           alt="Woo Eunsik"
-          width={784}
-          height={492}
+          width={BRAND_LOGO_WIDTH}
+          height={BRAND_LOGO_HEIGHT}
           priority
           sizes="(max-width: 1100px) 90vw, 720px"
         />

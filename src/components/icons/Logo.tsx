@@ -1,4 +1,9 @@
 import Image from "next/image";
+import {
+  BRAND_LOGO,
+  BRAND_LOGO_HEIGHT,
+  BRAND_LOGO_WIDTH,
+} from "@/lib/seo/site";
 
 type LogoProps = {
   width?: number;
@@ -6,14 +11,26 @@ type LogoProps = {
   className?: string;
 };
 
-/** `public/logo.svg` 기준 W7 모노그램 */
-export function Logo({ width = 72, height = 36, className }: LogoProps) {
+const DEFAULT_WIDTH = 110;
+
+function brandLogoHeight(width: number) {
+  return Math.round((width * BRAND_LOGO_HEIGHT) / BRAND_LOGO_WIDTH);
+}
+
+/** `public/WooEunsik.svg` 워드마크 */
+export function Logo({
+  width = DEFAULT_WIDTH,
+  height,
+  className,
+}: LogoProps) {
+  const resolvedHeight = height ?? brandLogoHeight(width);
+
   return (
     <Image
-      src="/logo.svg"
+      src={BRAND_LOGO}
       alt=""
       width={width}
-      height={height}
+      height={resolvedHeight}
       priority
       className={className}
       aria-hidden

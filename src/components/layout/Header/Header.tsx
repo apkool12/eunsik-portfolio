@@ -62,12 +62,12 @@ const LogoLink = styled(Link)`
     opacity: 0.85;
   }
 
-  svg {
-    width: clamp(42px, 12vw, 64px);
+  img {
+    width: clamp(88px, 20vw, 132px);
     height: auto;
 
     @media (max-width: 420px) {
-      width: 34px;
+      width: 72px;
     }
   }
 `;

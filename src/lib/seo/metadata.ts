@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import {
+  BRAND_LOGO,
   DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_HEIGHT,
+  DEFAULT_OG_IMAGE_WIDTH,
   SITE_AUTHOR,
   SITE_DESCRIPTION,
   SITE_LOCALE,
@@ -18,6 +21,18 @@ type PageMetadataOptions = {
   noIndex?: boolean;
 };
 
+function buildOgImage(image: string, alt: string) {
+  const imageUrl = image.startsWith("http") ? image : new URL(image, SITE_URL).toString();
+
+  return {
+    url: imageUrl,
+    alt,
+    ...(image === DEFAULT_OG_IMAGE
+      ? { width: DEFAULT_OG_IMAGE_WIDTH, height: DEFAULT_OG_IMAGE_HEIGHT }
+      : {}),
+  };
+}
+
 export function createPageMetadata({
   title,
   description = SITE_DESCRIPTION,
@@ -27,7 +42,7 @@ export function createPageMetadata({
   noIndex = false,
 }: PageMetadataOptions): Metadata {
   const url = new URL(path, SITE_URL).toString();
-  const imageUrl = image.startsWith("http") ? image : new URL(image, SITE_URL).toString();
+  const ogImage = buildOgImage(image, `${title} | ${SITE_NAME}`);
 
   return {
     title,
@@ -45,18 +60,13 @@ export function createPageMetadata({
       siteName: SITE_NAME,
       title,
       description,
-      images: [
-        {
-          url: imageUrl,
-          alt: `${title} | ${SITE_NAME}`,
-        },
-      ],
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [imageUrl],
+      images: [ogImage.url],
     },
   };
 }
@@ -90,12 +100,7 @@ export const rootMetadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        alt: SITE_TITLE,
-      },
-    ],
+    images: [buildOgImage(DEFAULT_OG_IMAGE, SITE_TITLE)],
   },
   twitter: {
     card: "summary_large_image",
@@ -104,8 +109,8 @@ export const rootMetadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
   },
   icons: {
-    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
+    icon: [{ url: BRAND_LOGO, type: "image/svg+xml" }],
+    shortcut: BRAND_LOGO,
+    apple: BRAND_LOGO,
   },
 };
