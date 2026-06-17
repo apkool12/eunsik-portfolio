@@ -1,4 +1,4 @@
-export const SITE_URL = "https://hamsik.kr";
+export const SITE_URL = "https://www.hamsik.kr";
 export const SITE_NAME = "Hamsik's Journey";
 export const SITE_TITLE = "우은식 · UI/프론트엔드 포트폴리오";
 export const SITE_DESCRIPTION =
