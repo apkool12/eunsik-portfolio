@@ -36,6 +36,181 @@ export function isBlogCodeBlock(
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "discord-chat-mirror-sse",
+    number: "08",
+    title: "가짜로 흘러가던 방송 채팅을 진짜 디스코드로 바꿨다",
+    excerpt:
+      "e스포츠 경매 방송 화면의 채팅 패널은 그동안 랜덤 템플릿을 뿌리는 클라이언트 시뮬레이션이었습니다. 이걸 실제 디스코드 채널을 그대로 비추는 읽기 전용 미러로 바꾸면서, 방향을 정하고·수신 방식을 고르고·채팅을 경매 상태에서 분리하고·봇이 없을 때를 대비하기까지의 설계 과정을 정리했습니다.",
+    date: "2026.06.21.",
+    tags: ["Discord", "SSE", "Next.js"],
+    category: "dev",
+    tone: "blue",
+    mark: "DC",
+    readTime: "9 min read",
+    lead:
+      "팀 단위로 선수를 입찰하는 e스포츠 경매 웹앱을 만들고 있습니다. 화면 한쪽에는 방송 분위기를 살리는 채팅 패널이 있는데, 그동안 이 패널은 미리 적어둔 문장 몇 개를 4초마다 랜덤으로 뿌리는 가짜였습니다. 분위기는 났지만 결국 혼잣말이었죠. 이번 작업은 그 자리에 실제 디스코드 채널의 메시지를 그대로 비추는 것이었습니다. 단순히 'API 붙이기'처럼 보였지만, 막상 들어가 보니 방향·수신 방식·전달 경로·없을 때의 대비까지 결정할 게 꽤 많았습니다. 코드보다 그 결정들을 적어두는 게 더 의미 있다고 생각해서, 순서대로 정리했습니다.",
+    sections: [
+      {
+        heading: "원래 채팅은 그냥 혼잣말이었다",
+        body: [
+          "기존 채팅 컴포넌트는 정직하게 가짜였습니다. CHAT_TEMPLATES라는 문장 배열을 두고, setInterval로 4초마다 하나를 뽑아 화면에 쌓는 구조였습니다. 주석에도 '채팅은 서버 비범위 — 방송 분위기용 클라이언트 시뮬레이션'이라고 적혀 있었습니다. 방송 화면이 비어 보이지 않게 하려는 임시방편이었던 거죠.",
+          "그런데 경매를 실제로 돌리다 보니, 보는 사람들이 디스코드에 모여서 떠들고 있었습니다. 정작 그 대화는 화면에 안 나오고, 화면에는 미리 적어둔 농담만 도는 상황이 어색했습니다. '이왕이면 진짜 채팅을 띄우자'가 이번 작업의 출발점이었습니다.",
+          "그래서 가장 먼저 한 건 코드를 짜는 게 아니라, 무엇을 만들 건지 한 문장으로 좁히는 일이었습니다. 결론은 이거였습니다. '지정한 디스코드 채널의 메시지를 경매 화면에 실시간으로, 단방향으로 비춘다.'",
+        ],
+      },
+      {
+        heading: "먼저 방향을 좁혔다 — 단방향 읽기 전용",
+        body: [
+          "디스코드 연동이라고 하면 떠올릴 수 있는 그림이 몇 가지 있습니다. (1) 디스코드 → 웹으로 메시지를 가져와 보여주기, (2) 웹에서 입력한 것도 디스코드로 보내는 양방향, (3) 입찰·낙찰 같은 경매 이벤트를 디스코드로 알림 보내기. 셋은 전혀 다른 작업입니다.",
+          "이번에 필요한 건 (1)뿐이었습니다. 경매 화면은 '보여주는' 화면이지 '입력받는' 화면이 아니고, 채팅은 시청자들끼리 디스코드에서 나누는 대화입니다. 웹에 입력창을 다는 순간 인증·도배·악용 같은 문제가 줄줄이 따라오는데, 지금 필요한 가치에 비하면 과합니다. 그래서 양방향과 이벤트 알림은 의식적으로 잘라내고, 읽기 전용 미러 하나로 범위를 못 박았습니다.",
+          "기능을 더하는 것보다, 지금 안 만들 것을 분명히 정해두는 게 설계에서는 더 중요할 때가 많습니다. 범위가 흐릿하면 코드도 흐릿해지니까요.",
+        ],
+      },
+      {
+        heading: "실시간 수신은 어떻게 — 폴링 대신 게이트웨이 봇",
+        body: [
+          "방향을 정했으니 '디스코드의 새 메시지를 어떻게 알아채느냐'가 다음 문제였습니다. 후보는 셋이었습니다.",
+          "첫째, REST API를 주기적으로 조회하는 폴링. 구현은 가장 쉽지만 수 초의 지연이 생기고 레이트리밋도 신경 써야 합니다. '방송 채팅'은 지연이 느껴지는 순간 맛이 빠집니다. 둘째, 디스코드 게이트웨이(웹소켓)에 직접 연결하기. 라이브러리 없이 가능하지만 하트비트·재연결·세션 리줌을 직접 구현해야 하고, 이건 틀리기 쉬운 종류의 코드입니다. 셋째, discord.js로 게이트웨이 봇을 띄우기. 의존성이 하나 늘지만 연결·재연결·인텐트 처리를 라이브러리가 알아서 해줍니다.",
+          "결정의 근거는 의외로 기존 아키텍처에 있었습니다. 이 앱은 경매 타이머를 메모리에 들고 도는 단일 상주 Node 프로세스였습니다. 즉 웹소켓을 계속 붙잡고 있을 '상시 살아있는 자리'가 이미 있었던 거죠. 서버리스였다면 게이트웨이 상시 연결이 어색했겠지만, 여기서는 자연스러웠습니다. 그래서 discord.js 게이트웨이 봇으로 정했습니다. 메시지를 받는 인텐트는 Guilds, GuildMessages, 그리고 본문을 읽기 위한 MessageContent 셋입니다.",
+        ],
+      },
+      {
+        heading: "채팅을 경매 스냅샷에 끼워 넣지 않은 이유",
+        body: [
+          "이 앱은 이미 SSE(Server-Sent Events)로 경매 상태를 실시간 브로드캐스트하고 있었습니다. 입찰이 들어오면 전체 경매 스냅샷을 만들어 모든 클라이언트에 쏘는 구조죠. 그래서 처음엔 '채팅도 그 스냅샷에 같이 넣으면 되겠네' 싶었습니다. 그런데 잠깐 생각해 보면 이건 나쁜 선택입니다.",
+          "채팅은 경매 상태와 아무 관련이 없고, 빈도는 훨씬 높습니다. 채팅 한 줄 올라올 때마다 팀·선수·포인트가 전부 담긴 경매 스냅샷을 통째로 다시 만들어 모두에게 쏜다면, 관심사도 섞이고 트래픽도 낭비됩니다. 게다가 클라이언트의 경매 구독 로직은 받은 프레임을 무조건 '경매 스냅샷'으로 파싱하기 때문에, 채팅을 같은 채널에 섞으면 파싱이 깨집니다.",
+          "그래서 채팅 전용 경로를 따로 뒀습니다. 채팅 전용 구독자 집합과 버퍼를 가진 chatBus 모듈, 그리고 /api/chat/stream이라는 별도 SSE 엔드포인트입니다. 경매용 SSE 코드와 구조는 똑같지만, 흐르는 데이터와 수명이 다른 두 흐름을 물리적으로 분리한 거죠.",
+          {
+            type: "code",
+            language: "typescript",
+            caption: "chatBus — 채팅 전용 구독자 + 최근 기록 링버퍼",
+            code: `const subscribers = new Set<Subscriber>();
+const buffer: ChatMsg[] = [];
+
+export function publishChat(msg: ChatMsg): void {
+  buffer.push(msg);
+  if (buffer.length > MAX_CHAT_HISTORY)
+    buffer.splice(0, buffer.length - MAX_CHAT_HISTORY);
+
+  const payload = \`data: \${JSON.stringify(msg)}\\n\\n\`;
+  for (const fn of subscribers) {
+    try { fn(payload); } catch { /* 끊긴 클라이언트는 버린다 */ }
+  }
+}`,
+          },
+        ],
+      },
+      {
+        heading: "봇은 언제 켜지나 — 기존 패턴을 그대로 따라갔다",
+        body: [
+          "게이트웨이 봇은 프로세스에서 딱 한 번만 로그인하면 됩니다. 문제는 Next.js에는 '서버 시작 시 여기서 한 번 실행' 같은 자리가 딱히 눈에 띄지 않는다는 점이었습니다. 그런데 코드를 읽다 보니 이 앱은 이미 비슷한 문제를 풀어둔 적이 있었습니다. 경매 SSE 라우트는 접속이 들어올 때 recoverTimer()를 호출해 '진행 중이던 타이머가 있으면 복구'하는 지연 초기화를 쓰고 있었습니다.",
+          "새로운 방식을 발명하기보다 그 패턴을 그대로 따라갔습니다. ensureDiscordStarted()를 만들고, 모듈 레벨 플래그로 가드해서 최초 한 번만 로그인하게 했습니다. 채팅 SSE 엔드포인트에 누군가 접속하는 순간 이 함수가 불리고, 봇은 그때 한 번 깨어납니다. 이미 있는 컨벤션을 따르면 읽는 사람이 덜 놀라고, 나도 새 버그를 만들 여지가 줄어듭니다.",
+          {
+            type: "code",
+            language: "typescript",
+            caption: "ensureDiscordStarted — 최초 1회 가드 + 폴백 강등",
+            code: `export function ensureDiscordStarted(): void {
+  if (started) return;
+  started = true;
+
+  const token = process.env.DISCORD_BOT_TOKEN;
+  const channelId = process.env.DISCORD_CHANNEL_ID;
+
+  // 토큰/채널이 없으면 봇을 켜지 않고 시뮬레이션으로 폴백
+  if (!token || !channelId) {
+    startSimulationFallback();
+    return;
+  }
+
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
+
+  client.on(Events.MessageCreate, (message) => {
+    if (message.channelId !== channelId) return; // 대상 채널만
+    if (message.author.bot) return;               // 봇 메시지 제외
+    const content = message.content.trim();
+    if (!content) return;                         // 첨부만 있는 글 제외
+
+    const sender = message.member?.displayName ?? message.author.username;
+    publishChat({ sender, message: content, color: colorFor(sender) });
+  });
+
+  // 로그인 실패해도 화면이 죽지 않게 폴백으로 강등
+  client.login(token).catch(() => startSimulationFallback());
+}`,
+          },
+        ],
+      },
+      {
+        heading: "빈 화면을 피하기 — 링버퍼와 접속 시 flush",
+        body: [
+          "SSE의 특성상, 방금 접속한 클라이언트는 '앞으로 올' 메시지만 받습니다. 즉 경매 중간에 들어온 사람의 채팅 패널은 한동안 텅 비어 있게 됩니다. 방송 화면에서 빈 패널은 꽤 어색하죠.",
+          "그래서 chatBus에 최근 메시지를 담는 작은 링버퍼(최대 30개)를 뒀습니다. 새 메시지가 들어오면 버퍼에 쌓고 초과분은 앞에서 잘라냅니다. 그리고 채팅 SSE에 새 연결이 붙는 순간, 구독자로 등록하기 직전에 이 버퍼의 최근 기록을 먼저 한 번 흘려보냅니다. 덕분에 늦게 들어와도 패널이 곧장 채워집니다. 디스코드 메시지를 DB에 영구 저장하지는 않습니다 — 방송용 분위기 미러일 뿐이라 메모리에 최근 몇 개만 들고 있으면 충분하다고 봤습니다.",
+          {
+            type: "code",
+            language: "typescript",
+            caption: "채팅 SSE — 접속 즉시 최근 기록부터 흘려보낸다",
+            code: `const stream = new ReadableStream({
+  start(controller) {
+    const send = (s: string) => {
+      try { controller.enqueue(encoder.encode(s)); } catch {}
+    };
+    // 접속 즉시 최근 기록을 전송해 빈 패널을 피한다
+    for (const msg of recentChat())
+      send(\`data: \${JSON.stringify(msg)}\\n\\n\`);
+    unsub = subscribeChat(send);
+  },
+  cancel() { unsub(); },
+});`,
+          },
+        ],
+      },
+      {
+        heading: "봇이 없을 때 — 시뮬레이션을 폴백으로 남겼다",
+        body: [
+          "여기서 한 가지 결정을 더 했습니다. 봇 토큰이나 채널 ID가 설정되지 않은 환경(개발·데모)에서는 채팅 패널을 어떻게 할 것인가. 두 선택지가 있었습니다. (a) 그냥 빈 패널로 두기, (b) 예전의 랜덤 시뮬레이션을 서버 측 폴백으로 살려두기.",
+          "(b)를 골랐습니다. 봇이 없으면 서버가 기존 CHAT_TEMPLATES를 4초마다 채팅 버스로 흘려보내고, 봇이 있으면 그 자리를 진짜 디스코드 메시지가 채웁니다. 클라이언트 입장에서는 똑같이 /api/chat/stream을 구독할 뿐, 그 너머가 진짜인지 가짜인지 신경 쓸 필요가 없습니다. 심지어 봇 로그인이 실패해도 자동으로 시뮬레이션으로 강등되도록 했습니다. 어떤 상황에서도 방송 화면이 비지 않게 하는 게 목표였으니까요.",
+          "재미있는 건, 처음엔 '제거 대상'이던 가짜 채팅 코드가 결국 폴백이라는 분명한 역할을 갖고 살아남았다는 점입니다. 버리려던 코드가 안전망이 된 셈입니다.",
+        ],
+      },
+      {
+        heading: "클라이언트는 거의 안 바뀌었다",
+        body: [
+          "서버 쪽에서 흐름을 다 정리해 둔 덕분에, 정작 화면 컴포넌트는 거의 손볼 게 없었습니다. setInterval로 가짜 문장을 뽑던 부분만 EventSource 구독으로 바꾸면 끝이었습니다. 받은 메시지를 최근 30개까지만 쌓아 보여주는 렌더링 로직은 그대로 재사용했습니다.",
+          {
+            type: "code",
+            language: "typescript",
+            caption: "StreamChat — 시뮬레이션 대신 SSE 구독",
+            code: `useEffect(() => {
+  const es = new EventSource("/api/chat/stream");
+  es.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data) as ChatMessage;
+      setChat((prev) => [...prev, msg].slice(-MAX_CHAT_HISTORY));
+    } catch { /* 깨진 프레임은 무시 */ }
+  };
+  return () => es.close();
+}, []);`,
+          },
+          "발신자 색은 작은 디테일이지만 신경 썼습니다. 디스코드 역할 색이 기본값이 아니면 그 색을 쓰고, 없으면 닉네임을 해시해서 고정 팔레트에서 한 색을 고릅니다. 같은 사람은 늘 같은 색으로 보이게 해서, 누가 말하는지가 색으로도 구분되게 한 거죠.",
+        ],
+      },
+      {
+        heading: "이번 작업에서 남긴 기준",
+        body: [
+          "처음엔 'API 하나 붙이는 일'로 보였지만, 실제로 시간을 쓴 곳은 코드가 아니라 결정들이었습니다. 범위를 단방향으로 좁힌 것, 폴링 대신 게이트웨이를 고른 것, 채팅을 경매 상태에서 분리한 것, 기존 지연 초기화 패턴을 그대로 따라간 것, 봇이 없을 때를 폴백으로 메운 것. 코드는 그 결정들의 결과일 뿐이었습니다.",
+          "특히 두 가지를 기준으로 남기고 싶습니다. 하나, 관심사가 다르고 빈도가 다른 데이터는 한 채널에 욱여넣지 말 것. 편해 보여도 결국 트래픽과 파싱이 발목을 잡습니다. 둘, 새 패턴을 발명하기 전에 코드베이스가 이미 같은 문제를 어떻게 풀었는지 먼저 볼 것. recoverTimer가 쓰던 지연 초기화를 그대로 따라간 게, 이번 작업에서 가장 덜 위험했던 선택이었습니다.",
+          "한 가지 솔직하게 덧붙이면, 이 구조는 '단일 프로세스'를 전제로 합니다. 메모리 구독자 집합과 링버퍼는 인스턴스가 하나일 때만 맞습니다. 나중에 여러 인스턴스로 늘린다면 Postgres LISTEN/NOTIFY나 Redis pub/sub로 바꿔야 한다는 메모를 코드에 남겨뒀습니다. 지금 필요 없는 걸 미리 만들진 않되, 어디서 무너질지는 적어두는 — 그 정도가 지금 단계에 맞는 선이라고 생각했습니다.",
+        ],
+      },
+    ],
+  },
+  {
     slug: "electron-build-hang-icloud",
     number: "07",
     title: "빌드가 멈춘 줄 알았는데 범인은 iCloud였다",
