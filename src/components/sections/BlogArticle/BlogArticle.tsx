@@ -9,6 +9,8 @@ import { BlogCodeBlock } from "@/components/ui/BlogCodeBlock";
 import {
   BLOG_POSTS,
   isBlogCodeBlock,
+  isBlogImageBlock,
+  isBlogLinkBlock,
   type BlogPost,
 } from "@/constants/blog";
 
@@ -404,6 +406,53 @@ const SectionHeading = styled.h2`
   }
 `;
 
+const Figure = styled.figure`
+  margin: 30px 0 0;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid #e5e5e5;
+  }
+`;
+
+const FigCaption = styled.figcaption`
+  margin-top: 10px;
+  color: #999;
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+`;
+
+const InlineLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 22px 12px 0 0;
+  padding: 10px 16px;
+  border: 1.5px solid #000;
+  border-radius: 999px;
+  color: #000;
+  font-family: "Pretendard", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  &::after {
+    content: "↗";
+    font-size: 13px;
+  }
+`;
+
 const Paragraph = styled.p`
   margin: 22px 0 0;
   color: #3f3f3f;
@@ -745,6 +794,23 @@ export function BlogArticle({ post }: { post: BlogPost }) {
                     language={block.language}
                     caption={block.caption}
                   />
+                ) : isBlogImageBlock(block) ? (
+                  <Figure key={`${section.heading}-img-${blockIndex}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={block.src} alt={block.alt} loading="lazy" />
+                    {block.caption ? (
+                      <FigCaption>{block.caption}</FigCaption>
+                    ) : null}
+                  </Figure>
+                ) : isBlogLinkBlock(block) ? (
+                  <InlineLink
+                    key={`${section.heading}-link-${blockIndex}`}
+                    href={block.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {block.label}
+                  </InlineLink>
                 ) : (
                   <Paragraph key={`${section.heading}-text-${blockIndex}`}>
                     {block}
